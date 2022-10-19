@@ -1,5 +1,5 @@
 const char * software_name = "ts4sdump";
-const char * software_version = "0.312.2407";
+const char * software_version = "0.320.2640";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #define     __REAL__    double

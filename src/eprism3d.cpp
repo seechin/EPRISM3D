@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "0.320.2639";
+const char * software_version = "0.320.2640";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"

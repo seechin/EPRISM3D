@@ -1,5 +1,5 @@
 const char * software_name = "gmxtop2solute";
-const char * software_version = "0.311.2375";
+const char * software_version = "0.320.2640";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    <errno.h>
@@ -263,7 +263,7 @@ bool analysis_top(char * filename, char * last_file_name, int last_line){
             } else if (sl[1] == "atoms"){ on_compile = 3;
             } else if (sl[1] == "molecules"){ on_compile = 4;
                 fprintf(fout, "# %s %s\n", software_name, software_version);
-                fprintf(fout, "%s", szLicence);
+                // fprintf(fout, "%s", szLicence);
                 if (solvent_format) fprintf(fout, "[atom]\n"); else fprintf(fout, "[solute]\n");
                 fprintf(fout, "#"); for (int i=0; i<software_argc; i++) fprintf(fout, " %s", software_argv[i]); fprintf(fout, "\n");
             } else if (sl[1] == "system"){ on_compile = 5;
