@@ -2,7 +2,7 @@
 
 # The Expanded Package of RISM
 
-v 1.1.320 (c) 2022 Cao Siqin
+v 1.1.321 (c) 2022 Cao Siqin
 
 All rights reserved. Academic use is licensed with [GNU Lesser General Public License (LGPL)](https://www.gnu.org/licenses/lgpl-3.0.en.html).
 
