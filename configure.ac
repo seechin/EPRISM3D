@@ -1,5 +1,5 @@
 # Initialization of autoconf
-AC_INIT([eprism], [1.1.320])
+AC_INIT([eprism], [1.1.321])
 AC_CONFIG_AUX_DIR([config_aux])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 

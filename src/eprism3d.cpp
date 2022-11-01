@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "0.320.2640";
+const char * software_version = "0.321.2653";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -131,30 +131,34 @@ STKeywordTableUnit CoulAL_alias [] = {
 #define CLOSURE_MSA             4
 #define CLOSURE_KGK             5
 #define CLOSURE_KH              6
-#define CLOSURE_PSE2            7
-#define CLOSURE_PSE3            8
-#define CLOSURE_PSE4            9
-#define CLOSURE_PSE5            10
-#define CLOSURE_PSE6            11
-#define CLOSURE_PSE7            12
-#define CLOSURE_PSE8            13
-#define CLOSURE_PSE9            14
-#define CLOSURE_PSE10           15
-#define CLOSURE_PY              16
-#define CLOSURE_HNCB            17
-#define CLOSURE_D2              18
-#define CLOSURE_MS              19
-#define CLOSURE_MSHNC           20
-#define CLOSURE_BPGG            21
-#define CLOSURE_BPGGHNC         22
-#define CLOSURE_VM              23
-#define CLOSURE_MHNC            24
-#define CLOSURE_MP              25
-#define CLOSURE_RBC_HNC         26
-#define CLOSURE_RBC_KH          27
-#define CLOSURE_USER1           28
-#define CLOSURE_USER2           29
-#define CLOSURE_USER3           30
+#define CLOSURE_PSE             7
+#define CLOSURE_PSE2            8
+#define CLOSURE_PSE3            9
+#define CLOSURE_PSE4            10
+#define CLOSURE_PSE5            11
+#define CLOSURE_PSE6            12
+#define CLOSURE_PSE7            13
+#define CLOSURE_PSE8            14
+#define CLOSURE_PSE9            15
+#define CLOSURE_PSE10           16
+#define CLOSURE_PY              17
+#define CLOSURE_HNCB            18
+#define CLOSURE_D2              19
+#define CLOSURE_MS              20
+#define CLOSURE_MSHNC           21
+#define CLOSURE_BPGG            22
+#define CLOSURE_BPGGHNC         23
+#define CLOSURE_VM              24
+#define CLOSURE_MHNC            25
+#define CLOSURE_MP              26
+#define CLOSURE_RBC_HNC         27
+#define CLOSURE_RBC_KH          28
+#define CLOSURE_USER1           29
+#define CLOSURE_USER2           30
+#define CLOSURE_USER3           31
+const int closures_needto_display_factor[] = {
+    CLOSURE_PLHNC, CLOSURE_PSE
+};
 const char * CLOSURE_name[100];
 STKeywordTableUnit CLOSURE_alias[200] = {
   // key names here
@@ -168,6 +172,7 @@ STKeywordTableUnit CLOSURE_alias[200] = {
     { CLOSURE_PLHNC             , "PLHNC" },
     { CLOSURE_HARDSPHERE        , "HS" },
     { CLOSURE_KH                , "KH" },
+    { CLOSURE_PSE               , "PSE" },
     { CLOSURE_PSE2              , "PSE2" },
     { CLOSURE_PSE3              , "PSE3" },
     { CLOSURE_PSE4              , "PSE4" },

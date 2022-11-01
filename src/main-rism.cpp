@@ -181,7 +181,26 @@ namespace RISMHI3D_RISMNS {
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
-
+            } else if (closure==CLOSURE_PSE){
+                for (size_t i3=i3begin; i3<i3end; i3++){
+                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
+                    t = -uuv[i3] + hhere - cuv[i3];
+                    if (t>0){ double s = t;
+                        t += ((factor-1)>1?1:(factor-1)<0?0:(factor-1)) * s*s/2;
+                        t += ((factor-2)>1?1:(factor-2)<0?0:(factor-2)) * s*s*s/6;
+                        t += ((factor-3)>1?1:(factor-3)<0?0:(factor-3)) * s*s*s*s/24;
+                        t += ((factor-4)>1?1:(factor-4)<0?0:(factor-4)) * s*s*s*s*s/120;
+                        t += ((factor-5)>1?1:(factor-5)<0?0:(factor-5)) * s*s*s*s*s*s/720;
+                        t += ((factor-6)>1?1:(factor-6)<0?0:(factor-6)) * s*s*s*s*s*s*s/5040;
+                        t += ((factor-7)>1?1:(factor-7)<0?0:(factor-7)) * s*s*s*s*s*s*s*s/40320;
+                        t += ((factor-8)>1?1:(factor-8)<0?0:(factor-8)) * s*s*s*s*s*s*s*s*s/362880;
+                        t += ((factor-9)>1?1:(factor-9)<0?0:(factor-9)) * s*s*s*s*s*s*s*s*s*s/3628800;
+                        t += h_nbulk_rism;
+                    } else {
+                        t = exp(t)*nbulk_rism - 1;
+                    }
+                    res[i3] = t - huv[i3]; huv[i3] = t;
+                }
             } else if (closure==CLOSURE_PY){
                 for (size_t i3=i3begin; i3<i3end; i3++){
                     double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
@@ -534,9 +553,24 @@ namespace RISMHI3D_RISMNS {
     //>>>>>>>         report functions         >>>>>>>>>>>>>>>>>>>>
     //>>>>>>>                                  >>>>>>>>>>>>>>>>>>>>
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    void fill_closure_additional_buffer(IET_Param * sys, int ic, char * additional_buffer, size_t sizeof_additional_buffer){
+        int closure= sys->closures[ic];
+        double closure_factor = sys->closure_factors[ic];
+        if (closure==CLOSURE_PLHNC){
+            snprintf(additional_buffer, sizeof_additional_buffer, "(%g)", sys->ccutoff);
+        } else {
+            bool display_additional = false;
+            for (int i=0; !display_additional&&i<sizeof(closures_needto_display_factor)/sizeof(closures_needto_display_factor[0]); i++) if (closure==closures_needto_display_factor[i]) display_additional = true;
+            if (display_additional){
+                snprintf(additional_buffer, sizeof_additional_buffer, "(%g)", closure_factor);
+            } else strncpy(additional_buffer, "", sizeof_additional_buffer);
+        }
+    }
     bool fill_closure_buffer(IET_Param * sys, char * closure_buffer, size_t sizeof_closure_buffer){
         memset(closure_buffer, 0, sizeof_closure_buffer);
         bool multiple_closure = false; for (int iv=1; iv<sys->nv; iv++) if (sys->closures[iv] != sys->closures[0]) multiple_closure = true;
+
+        char additional_buffer[64]; fill_closure_additional_buffer(sys, 0, additional_buffer, sizeof(additional_buffer));
         if (multiple_closure){
             int closure_fill[MAX_SOL]; int n_closure_fill[MAX_SOL]; int n_fill = 0;
             for (int iv=0; iv<sys->nv; iv++){
@@ -549,10 +583,11 @@ namespace RISMHI3D_RISMNS {
             for (int iv=0; iv<n_fill; iv++){
                 if (iv<4){
                     char buffer[128]; memset(buffer, 0, sizeof(buffer));
+                    fill_closure_additional_buffer(sys, iv, additional_buffer, sizeof(additional_buffer));
                     if (n_closure_fill[iv]==1){
-                        snprintf(buffer, sizeof(buffer), "%s%s", iv>0?",":"", CLOSURE_name[closure_fill[iv]]);
+                        snprintf(buffer, sizeof(buffer), "%s%s%s", iv>0?",":"", CLOSURE_name[closure_fill[iv]], additional_buffer);
                     } else {
-                        snprintf(buffer, sizeof(buffer), "%s%sx%d", iv>0?",":"", CLOSURE_name[closure_fill[iv]], n_closure_fill[iv]);
+                        snprintf(buffer, sizeof(buffer), "%s%sx%d%s", iv>0?",":"", CLOSURE_name[closure_fill[iv]], n_closure_fill[iv], additional_buffer);
                     }
                     strncat(closure_buffer, buffer, sizeof_closure_buffer-strlen(buffer));
                 } else if (iv==4) strncat(closure_buffer, ",...", sizeof_closure_buffer-4);
@@ -563,7 +598,7 @@ namespace RISMHI3D_RISMNS {
                     if (iv>0) strcat(closure_buffer, ","); strcat(closure_buffer, CLOSURE_name[sys->closures[iv]]);
                 } else if (iv==4) strcat(closure_buffer, ",...");
             }*/
-        } else strncpy(closure_buffer, CLOSURE_name[sys->closures[0]], sizeof_closure_buffer);
+        } else snprintf(closure_buffer, sizeof_closure_buffer, "%s%s", CLOSURE_name[sys->closures[0]], additional_buffer); // strncpy(closure_buffer, CLOSURE_name[sys->closures[0]], sizeof_closure_buffer);
         return multiple_closure;
     }
 

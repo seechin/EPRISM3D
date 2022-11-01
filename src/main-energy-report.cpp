@@ -15,18 +15,23 @@ void fill_in_report_mass(IET_Param * sys, IET_Report & total, IET_Report * sites
     total.mass = 0; for (int iv=0; iv<sys->nv; iv++){ total.mass += sites[iv].mass * sites[iv].density / total.density; };
     total.mass_mol = total.mass;
 }
+double factorial(double n){
+    double ret = 1;
+    for (double i=2; i<=n; i++) ret *= i;
+    return ret;
+}
 double calculate_excessive_chemical_potential(int closure, double closure_factor, double ccutoff, double uuv, double huv, double hlr, double cuv, double clr){
-    double excessive_GF = - (0.5*huv + 1) * (cuv + clr); double t = huv - cuv; double tz = -uuv + huv - cuv;
+    double excessive_GF = - (0.5*huv + 1) * (cuv + clr);
+    double exp_ccutoff = exp(ccutoff);
+    double t_no_clr = huv - cuv; double t_with_clr = huv - cuv - clr;
+    double tz = -uuv + huv - cuv;
     if (closure<0) return excessive_GF;
+    double n_pse, w_pse;
     switch (closure) {
         case CLOSURE_HNC            : return excessive_GF + 0.5*huv*huv;
-        case CLOSURE_PLHNC          : return excessive_GF + (huv<exp(ccutoff)? 0.5*huv*huv : 0);
-        case CLOSURE_MHNC           :
+        case CLOSURE_PLHNC          : return excessive_GF + (huv<exp_ccutoff? 0.5*huv*huv : 0);
         case CLOSURE_MSA            : return excessive_GF; // confirmed
         case CLOSURE_KGK            : return excessive_GF; // confirmed
-        case CLOSURE_PY             : return t==0? -(cuv+clr) : (cuv+clr)*ln(1 + fabs(t))/t; // experimental, not finished
-        case CLOSURE_D2             : return excessive_GF + 0.5*huv*huv; // HNC used. Should include: - 0.5*t*t - huv*t*t/3;
-        case CLOSURE_HNCB           : return excessive_GF + 0.5*huv*huv; // not finished
         case CLOSURE_KH             : return excessive_GF + (huv<0? 0.5*huv*huv : 0);
         case CLOSURE_PSE2           : return excessive_GF + 0.5*huv*huv - (tz>0? tz*tz*tz/6 : 0);
         case CLOSURE_PSE3           : return excessive_GF + 0.5*huv*huv - (tz>0? tz*tz*tz*tz/24 : 0);
@@ -37,11 +42,19 @@ double calculate_excessive_chemical_potential(int closure, double closure_factor
         case CLOSURE_PSE8           : return excessive_GF + 0.5*huv*huv - (tz>0? tz*tz*tz*tz*tz*tz*tz*tz*tz/362880 : 0);
         case CLOSURE_PSE9           : return excessive_GF + 0.5*huv*huv - (tz>0? tz*tz*tz*tz*tz*tz*tz*tz*tz*tz/3628800 : 0);
         case CLOSURE_PSE10          : return excessive_GF + 0.5*huv*huv - (tz>0? tz*tz*tz*tz*tz*tz*tz*tz*tz*tz*tz/39916800 : 0);
-        case CLOSURE_MS             :
-        case CLOSURE_MSHNC          :
-        case CLOSURE_BPGGHNC        :
-        case CLOSURE_VM             :
-        case CLOSURE_MP             : return excessive_GF;
+        case CLOSURE_PSE            :   // confirmed
+            n_pse = floor(closure_factor); w_pse = 1; if (closure_factor>n_pse){ w_pse = closure_factor-n_pse; n_pse++; }
+            return excessive_GF + 0.5*huv*huv - w_pse * (tz>0? pow(tz,n_pse+1)/factorial(n_pse+1) : 0);
+        case CLOSURE_PY             : return 2*huv - log((1+t_with_clr)*(1+t_with_clr))/2 - huv*(t_with_clr==0?1:log((1+t_with_clr)*(1+t_with_clr))/2/t_with_clr);
+        case CLOSURE_D2             : return excessive_GF + 0.5*huv*huv + 0.5*t_no_clr*t_no_clr + huv*t_no_clr*t_no_clr*2/3;
+        case CLOSURE_HNCB           : return excessive_GF; // not finished
+        case CLOSURE_MS             : return huv + (1+huv)/3*sqrt((1+2*t_with_clr)>0?(1+2*t_with_clr):0);
+        case CLOSURE_BPGG           : return huv + (1+huv)/3*pow((1+closure_factor*t_with_clr)>0?(1+closure_factor*t_with_clr):0, 1.0/closure_factor);
+        case CLOSURE_MSHNC          : return huv + huv>0? (1+huv)/3*sqrt((1+2*t_with_clr)>0?(1+2*t_with_clr):0) : 0;
+        case CLOSURE_BPGGHNC        : return huv + huv>0? (1+huv)/3*pow((1+closure_factor*t_with_clr)>0?(1+closure_factor*t_with_clr):0, 1.0/closure_factor) : 0;
+        case CLOSURE_VM             : return excessive_GF; // not finished
+        case CLOSURE_MHNC           : return excessive_GF; // not finished
+        case CLOSURE_MP             : return excessive_GF; // not finished
     }
     return excessive_GF;
 }

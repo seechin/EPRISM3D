@@ -85,7 +85,7 @@ const char * szHelpCommands = "\
     rism/hi[:step=100]      run rism/hi with given steps\n\
       rism: rism/ssoz, hi: nohi/hi/hshi\n\
     closure[-a/m]:...       20 (or less) closures, or one closure for all\n\
-      closures: HNC/PLHNC, MSA/KGK, KH/PSE2/.../PSE10\n\
+      closures: HNC/PLHNC, MSA/KGK, KH/PSE/PSE2/.../PSE10\n\
       other closures: PY, HNCB/D2, MS, BPGG, VM/MHNC, MP\n\
     cf[-a/m]=1,1,...        20 (or less) closure factors\n\
       closure/cf surfix: -a atomic, -m molecular, or specify one for all\n\
