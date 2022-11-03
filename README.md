@@ -1,6 +1,6 @@
-<img src="https://github.com/seechin/eprism/blob/main/logo.png" height=100></img>
+<img src="https://github.com/seechin/eprism3d/blob/main/logo.png" height=100></img>
 
-# The Expanded Package of RISM
+# The Expanded Package of 3DRISM
 
 v 1.1.321 (c) 2022 Cao Siqin
 
