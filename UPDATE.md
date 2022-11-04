@@ -1,10 +1,17 @@
+# 1.1.322
+
+Nov 3, 2022
+
+Change the distribution name to EPRISM3D
+
+
 # 1.1.321
 
 Nov 1, 2022
 
 Add: closure: PSE, allows fractional order of PSE
 
-e.g.: “cf=3 closure=pse” = PSE3; PSE3 < “cf=3.5 closure=PSE3” < PSE4
+e.g.: “cf=3 closure=pse” = PSE3; “cf=3.5 closure=PSE3” ∈ [PSE3, PSE4]
 
 Add: free energy functionals for: PY, D2, MS, BPGG
 
@@ -18,6 +25,7 @@ Add: -allow-original-err, display original (unscaled) SCF error in RISM-closure 
 Add from from 0.234: -cr, detect and remove unrealistic water in cavities or pockets
 
 Fix: rewrote MS and BPGG closures
+
 
 # 1.0.316
 

@@ -32,13 +32,14 @@
 
 #ifdef PACKAGE_VERSION
   #define DISTRIBUTE_VERSION    PACKAGE_VERSION
+#else
+  #define DISTRIBUTE_VERSION    "1.1.322"
 #endif
-//#define DISTRIBUTE_VERSION      "1.1.321"
 #ifndef DISTRIBUTE_VERSION
     const char * szLicence = "";
 #else
   const char * szLicence = "\
- # All rights reserved. Academic use is licensed with GNU Lesser General Public\n\
- # License (LGPL): https://www.gnu.org/licenses/lgpl-3.0.en.html\n\
+ # All rights reserved. You can use and modify the software under the GNU Lesser\n\
+ # General Public License v3: https://www.gnu.org/licenses/lgpl-3.0.en.html\n\
 ";
 #endif

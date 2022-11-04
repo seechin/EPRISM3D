@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 
                             A brief user guide
-                             EPRISM v 1.1.320
+                             EPRISM v 1.1.322
 
 -------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ EPRISM_HOME_FOLDER
 │   ├── heatmap             Plot cut-view of 3D distributions
 │   └── generate-idc.sh     Generate IDC corrected solute files
 └── share
-    └── eprism
+    └── eprism3d
         ├── solute              some examples of solulte files
         │   ├── methane.gro     Conformation of a methane, GROMACS format
         │   ├── methane.pdb     Conformation of a methane, PDB format
