@@ -6,7 +6,7 @@ v 1.1.322 (c) 2022 Cao Siqin
 
 All rights reserved. You can use and modify the software under the [GNU Lesser General Public License v3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 
-EPRISM is ther kernel of [EPISOL](https://github.com/seechin/EPISOL). EPRISM is continued from [3DRISMHI](https://github.com/seechin/3DRISMHI). 
+EPRISM is ther kernel of [EPISOL](https://github.com/EPISOLrelease/EPISOL). EPRISM is continued from [3DRISMHI](https://github.com/seechin/3DRISMHI). 
 
 Refer to [README](https://github.com/seechin/eprism/blob/main/README) for installation and user guide.
 
