@@ -7,6 +7,10 @@
 
 1. Installation
 
+Before installation, please make the following files executable: configure, 
+config_aux/*:
+chmod -R +x configure config_aux
+
 EPRISM uses the standard autoconf and automake for installations like most GNU
 programs. Normally, EPRISM is installed like:
 
