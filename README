@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 
                             A brief user guide
-                             EPRISM v 1.1.322
+                            EPRISM3D v 1.1.322
 
 -------------------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ EPRISM_HOME_FOLDER
 After installation, please add the paths of EPRISM to environment variables:
 
 export PATH=$PATH:$EPRISM_HOME_FOLDER/bin
-export IETLIB=$EPRISM_HOME_FOLDER/share/eprism/solvent
+export IETLIB=$EPRISM_HOME_FOLDER/share/eprism3d/solvent
 
 eprism3d will search solvent files in $IETLIB if it cannot find it from the
 current working directory.
@@ -226,7 +226,7 @@ formats) and conformations are stored in solutes/ and pdbs/ folders,
 respectively. Then eprism3d will automatically compute for all solute
 molecules:
 
-eprism -p solvent/tip3p-amber14.01A.gaff -s solutes -f pdbs -ntb 20 -nt 2 ...
+eprism3d -p solvent/tip3p-amber14.01A.gaff -s solutes -f pdbs -ntb 20 -nt 2 ...
 
 Here each solute will be computed with 2 threads (-nt 2), and 20 solutes
 (-ntb 20) will be computed simultaneously. This will use totally 40 cores.

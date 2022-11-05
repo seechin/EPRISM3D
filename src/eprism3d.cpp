@@ -262,9 +262,9 @@ const char * HIAL_name[] = { "noHI", "HSHI", "LDI" };
 #define IETCMD_DENSITY          26
 #define IETCMD_BUILD_FF         27
 #define IETCMD_BUILD_UUV        28
-#define IETCMD_HOLD             30
-#define IETCMD_RDF_CONTENT      32
-#define IETCMD_TEMPERATURE      33
+#define IETCMD_HOLD             29
+#define IETCMD_RDF_CONTENT      30
+#define IETCMD_TEMPERATURE      31
 #define IETCMD_TEST             98
 #define IETCMD_TEST_SAVE        99
 #define IETCMD_v_temperature    101
@@ -304,9 +304,6 @@ const char * HIAL_name[] = { "noHI", "HSHI", "LDI" };
 #define IETCMD_v_excess_GF      261
 #define IETCMD_v_excess_RISM    262
 #define IETCMD_v_excess_hyb     263
-
-#define IETCMD_v_zeta_hnc       271
-#define IETCMD_v_zeta_closure   272
 
 // test commands
 #define IETCMD_v_Yukawa         3001

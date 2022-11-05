@@ -2377,12 +2377,6 @@ bool analysis_command(IET_Param * sys, char * line, const char * line_orig, cons
                         sys->cmd_flag_energy_ever_display = true;
                     } else if (sl[i]=="excessHyb" || sl[i]=="exHyb" || sl[i]=="excess-Hyb" || sl[i]=="excess_Hyb" || sl[i]=="excessChemHyb" || sl[i]=="excess-chem-hyb" || sl[i]=="excessive-chemical-potential-hybid" || sl[i]=="excess_chem_hyb" || sl[i]=="excessive_chemical_potential_hybrid"){
                         cmd.command_params_int[i_param_list++] = IETCMD_v_excess_hyb;
-                    } else if (sl[i]=="zeta" || sl[i]=="zeta-hnc" || sl[i]=="zeta_hnc" || sl[i]=="zetaHNC"){
-                        cmd.command_params_int[i_param_list++] = IETCMD_v_zeta_hnc;
-                        sys->cmd_flag_energy_ever_display = true;
-                    } else if (sl[i]=="zeta-closure" || sl[i]=="zeta_closure"){
-                        cmd.command_params_int[i_param_list++] = IETCMD_v_zeta_closure;
-                        sys->cmd_flag_energy_ever_display = true;
                     } else if (sl[i]=="rdf"){
                         cmd.command_params_int[i_param_list++] = IETCMD_v_rdf;
                         sys->cmd_flag_rdf_ever_display = true;

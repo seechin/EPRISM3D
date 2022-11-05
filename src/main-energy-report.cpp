@@ -1,8 +1,4 @@
 
-
-
-
-
 void fill_in_report_mass(IET_Param * sys, IET_Report & total, IET_Report * sites){
     double molecule_mass[MAX_SOL]; memset(molecule_mass, 0, sizeof(molecule_mass));
     for (int iv=0; iv<sys->nv; iv++) molecule_mass[sys->av[iv].iaa] += sys->av[iv].mass * sys->av[iv].multi;
@@ -58,6 +54,38 @@ double calculate_excessive_chemical_potential(int closure, double closure_factor
     }
     return excessive_GF;
 }
+double calculate_zeta_by_chuv(int closure, double factor, double uuv, double huv, double cuv, double hlr){
+    double chuv = huv - cuv; double t_over_ch = 0; double s, t;
+    switch (closure) {
+        case CLOSURE_HNC            : t_over_ch = 1; break;
+        case CLOSURE_PLHNC          : t_over_ch = 1; break;
+        case CLOSURE_MHNC           : t_over_ch = 1; break; // not defined
+        case CLOSURE_MSA            : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : (ln(1-uuv+chuv) + uuv)/chuv; break;
+        case CLOSURE_KGK            : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : (ln(1-uuv+chuv) + uuv)/chuv; break;
+        case CLOSURE_PY             : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : ln(1+chuv)/chuv; break;
+        //case CLOSURE_D2             : t_over_ch = 1 - chuv/2; break;
+        case CLOSURE_D2             : t_over_ch = 1; break;
+        case CLOSURE_HNCB           : t_over_ch = 1; break;  // undefined
+        //case CLOSURE_KH             : t_over_ch = -uuv+chuv<=0? 1 : chuv==0? 1 : (ln(1-uuv+chuv) + uuv)/chuv; break;
+        case CLOSURE_KH             : t_over_ch = huv<=0? 1 : chuv==0? 1 : (ln(1+huv) + uuv)/chuv; break; //t_over_ch = 1; break;
+        case CLOSURE_PSE2           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2)/chuv; break;
+        case CLOSURE_PSE3           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6)/chuv; break;
+        case CLOSURE_PSE4           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24)/chuv; break;
+        case CLOSURE_PSE5           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120)/chuv; break;
+        case CLOSURE_PSE6           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120+chuv*chuv*chuv*chuv*chuv*chuv/720)/chuv; break;
+        case CLOSURE_PSE7           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120+chuv*chuv*chuv*chuv*chuv*chuv/720+chuv*chuv*chuv*chuv*chuv*chuv*chuv/5040)/chuv; break;
+        case CLOSURE_PSE8           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120+chuv*chuv*chuv*chuv*chuv*chuv/720+chuv*chuv*chuv*chuv*chuv*chuv*chuv/5040+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/40320)/chuv; break;
+        case CLOSURE_PSE9           : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120+chuv*chuv*chuv*chuv*chuv*chuv/720+chuv*chuv*chuv*chuv*chuv*chuv*chuv/5040+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/40320+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/362880)/chuv; break;
+        case CLOSURE_PSE10          : t_over_ch = 1; break; // t_over_ch = chuv<=0? 1 : ln(1+chuv+chuv*chuv/2+chuv*chuv*chuv/6+chuv*chuv*chuv*chuv/24+chuv*chuv*chuv*chuv*chuv/120+chuv*chuv*chuv*chuv*chuv*chuv/720+chuv*chuv*chuv*chuv*chuv*chuv*chuv/5040+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/40320+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/362880+chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv*chuv/3628800)/chuv; break;
+        case CLOSURE_MS             : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : sqrt(1+2*chuv)/chuv; break;
+        case CLOSURE_MSHNC          : t_over_ch = chuv<=0? 1 : sqrt(1+2*chuv)/chuv; break;
+        case CLOSURE_BPGGHNC        : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : pow(1+factor*chuv, 1.0/factor)/chuv; break;
+        case CLOSURE_VM             : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : 1 - chuv/2/(1+factor*chuv); break;
+        case CLOSURE_MP             : t_over_ch = 1; break; // t_over_ch = chuv==0? 1 : ((1+factor)*exp(chuv/(1+factor)) - factor)/chuv; break;
+        default: t_over_ch = 1; break;
+    }
+    return t_over_ch * cuv;
+}
 
 void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total, IET_Report * sites, double dielect=1, double scale_lj=1, double scale_coul=1){
     size_t N3 = arr->nx * arr->ny * arr->nz;
@@ -99,18 +127,6 @@ void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total,
             double excessive_GF_LR = (- (0.5*huv1[i3] + 1) * clr1[i3]) * dN * sys->av[iv].multi * (dd1?dd1[i3]/nbulk : 1) / beta;
             double excessive_RISM_SR = calculate_excessive_chemical_potential(sys->closures[iv], sys->closure_factors[iv], sys->ccutoff, uuv1[i3], huv1[i3], hlr1[i3], cuv1[i3], 0) * (dd1?dd1[i3]:1) * dN * sys->av[iv].multi / beta;
             sites[iv].excess_chem[2] += excessive_RISM_SR + excessive_GF_LR;
-          // correlations
-            sites[iv].cuv += (cuv1[i3]) * dN * sys->av[iv].multi;
-            sites[iv].clr += (clr1[i3]) * dN * sys->av[iv].multi;
-            double zeta_this = calculate_zeta_by_chuv(sys->closures[iv], sys->closure_factors[iv], uuv1[i3], huv1[i3], cuv1[i3], hlr1[i3]);
-            double zeta_hnc = calculate_zeta_by_chuv(CLOSURE_HNC, sys->closure_factors[iv], uuv1[i3], huv1[i3], cuv1[i3], hlr1[i3]);
-            if (dn>sys->gcutoff_liquid_occupation){
-                sites[iv].zeta[0] += zeta_hnc * dN * (dd1? dd1[i3]:nbulk) ;
-                sites[iv].zeta[1] += zeta_hnc * dN * sys->av[iv].multi * (dd1? dd1[i3]:nbulk) ;
-                sites[iv].zeta[2] += zeta_this * dN * (dd1? dd1[i3]:nbulk) ;
-                sites[iv].zeta[3] += zeta_this * dN * sys->av[iv].multi * (dd1? dd1[i3]:nbulk) ;
-            }
-            if (dn>sys->gcutoff_liquid_occupation) sites[iv].chuv += (huv1[i3] - cuv1[i3])*dN;
         }
         sites[iv].dN = sites[iv].N - sites[iv].N0;
         sites[iv].dNg = sites[iv].Ng - sites[iv].N0;

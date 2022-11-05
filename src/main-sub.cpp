@@ -81,8 +81,6 @@ const char * get_variable_name(int var){
         case IETCMD_v_excess_GF:    return "exGF";
         case IETCMD_v_excess_RISM:  return "excess";
         case IETCMD_v_excess_hyb:   return "exHyb";
-        case IETCMD_v_zeta_hnc:     return "zetaHNC";
-        case IETCMD_v_zeta_closure: return "zetaClos";
         default: return "(unknown)";
     }
 }
@@ -582,8 +580,6 @@ const char * get_report_title(int print_item){
         case IETCMD_v_excess_GF:    return "exGF";
         case IETCMD_v_excess_RISM:  return "excess";
         case IETCMD_v_excess_hyb:   return "exHyb";
-        case IETCMD_v_zeta_hnc:     return "zetaHNC";
-        case IETCMD_v_zeta_closure: return "zetaClos";
     }
     return "";
 }
@@ -598,17 +594,9 @@ double get_report_value(IET_Report * report, int print_item){
         case IETCMD_v_PMV:          return report->dN;
         case IETCMD_v_Ef:           return report->Uef0;
         case IETCMD_v_Ef1:          return report->Uef1;
-        case IETCMD_v_cuv:          return report->cuv + report->clr;
-        case IETCMD_v_csr:          return report->cuv;
-        case IETCMD_v_clr:          return report->clr;
-        case -IETCMD_v_cuv:         return report->chuv + report->chlr;
-        case -IETCMD_v_csr:         return report->chuv;
-        case -IETCMD_v_clr:         return report->chlr;
         case IETCMD_v_excess_GF:    return report->excess_chem[0];
         case IETCMD_v_excess_RISM:  return report->excess_chem[1];
         case IETCMD_v_excess_hyb:   return report->excess_chem[2];
-        case IETCMD_v_zeta_hnc:     return report->zeta[0];
-        case IETCMD_v_zeta_closure: return report->zeta[2];
     }
     return 0;
 }
