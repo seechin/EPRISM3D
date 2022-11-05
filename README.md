@@ -8,7 +8,7 @@ All rights reserved. You can use and modify the software under the [GNU Lesser G
 
 EPRISM is ther kernel of [EPISOL](https://github.com/EPISOLrelease/EPISOL). EPRISM is continued from [3DRISMHI](https://github.com/seechin/3DRISMHI). 
 
-Refer to [README](https://github.com/seechin/eprism/blob/main/README) for installation and user guide.
+Refer to [README](https://github.com/seechin/eprism/blob/main/README) for installation and user guide. Please run the following command before installation: chmod -R +x configure config_aux
 
 # References
 
