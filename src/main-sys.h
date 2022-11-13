@@ -89,7 +89,6 @@ class IET_Param {
     double lse_a, lse_b; int calc_ab_automatically, calc_nbulk_automatically;
     double nbulk[MAX_SOL]; int nnbulk; // atomised mole fraction
         double nbulk_rism[MAX_SOL];
-    double ccutoff_hi;
     #ifdef _EXPERIMENTAL_
       IET_Param_Exp ex; // experimental features
     #endif
@@ -97,7 +96,7 @@ class IET_Param {
     __REAL__ errtolhi, errtolrism; __REAL__ delhi, delrism; int ndiis_rism, ndiis_hi;
     bool err_from_unscaled_res;
   public:   // output
-    double gcutoff_liquid_occupation; double gcutoff_ef_occupation;
+    double gcutoff_ef_occupation;
     int out_rdf_bins; RDFGroup rdf_grps[MAX_RDF_GRPS]; int n_rdf_grps; int rdf_content;
   public:   // experimental features
     bool hlr_no_hi;
@@ -117,11 +116,9 @@ class IET_Param {
     int stepmax_rism;
     unsigned int ietal;
     int closures[MAX_SOL]; __REAL__ closure_factors[MAX_SOL];
-    int risp_integrator;
   public:   // HI params
     int stepmax_hi;
     unsigned int hial; // HI algorithm
-    double ucutoff_hs, ucutoff_risp, uuv_cutoff;
   public:   // command quene and command options
     IET_command * cmd; int ncmd, ncmd_max;
     bool cmd_flag_energy_ever_display;
@@ -159,13 +156,12 @@ class IET_Param {
         memset(batch_cmd, 0, sizeof(batch_cmd)); len_batch_cmd = 0;
         memset(batch_out, 0, sizeof(batch_out)); len_batch_out = 0;
 
-        forcefield_prefix = 0;
+        forcefield_prefix = FFPREFIX_GAFF;
         rism_coulomb_renormalization = true;
         mixingrule_sigma_geometric = false; mixingrule_sigma_geometric_specified = false;
         suspend_calculation = false; is_suspend_calculation = false;
 
         for (int i=0; i<MAX_SOL; i++){ closures[i] = CLOSURE_HNC; closure_factors[i] = 1; }
-        risp_integrator = 0;
         drrism = drhi = 0; nr[0] = nr[1] = nr[2] = 100; nv = nvm = 0;
         //output_significant_digits = 160;
         output_significant_digits = 7;
@@ -182,7 +178,7 @@ class IET_Param {
         traj.count = 0; traj.atom = nullptr; traj.box = Vector(0,0,0); box = Vector(0, 0, 0); force_box = false;
         as = nullptr; nas = nasmax = nav = nmv = nmvb = 0; memset(av, 0, sizeof(av));
         rvdw = rcoul = 1; rlocal_coul = -1; gamma_erf = 2/rcoul; gamma_auto_generate = true;
-        ccutoff = 3;
+        ccutoff = 100;
         pbc_x = pbc_y = pbc_z = true;
         scale_lj = scale_coul = scale_hs = 1;
         time_begin = time_end = time_step = 0; handling_xtc = false;
@@ -199,20 +195,18 @@ class IET_Param {
         stepmax_hi = 1000;
         errtolhi = check_error_tol(0); delhi = 1; ndiis_hi = 0;
         err_from_unscaled_res = false;
-        hial = HIAL_NONE; ucutoff_hs = 5; ucutoff_risp = -100; uuv_cutoff = -100;
+        hial = HIAL_NONE;
         nmvam = 0; density_hi = 33.4;
         ndipole = 0;
         for (int i=0; i<MAX_SOL; i++) zeta_scaling_factor[i] = 1; n_zeta_scaling_factor = 0;
         for (int i=0; i<MAX_SOL; i++) degree_of_freedom[i] = 3; n_degree_of_freedom = 0;
         for (int i=0; i<MAX_SOL; i++) llambda[i] = 0; nllambda = 0; nbulk[0] = 1; nnbulk = 0;
         for (int i=0; i<MAX_SOL; i++) nbulk_rism[0] = 1;
-        ccutoff_hi = 3;
         lse_a = 0.3; lse_b = 54; calc_ab_automatically = 2; calc_nbulk_automatically = false;
         #ifdef _EXPERIMENTAL_
             ex.init();
         #endif
 
-        gcutoff_liquid_occupation = MACHINE_REASONABLE_ERROR;
         gcutoff_ef_occupation = MACHINE_REASONABLE_ERROR;
         out_rdf_bins = 50; n_rdf_grps = 0; memset(rdf_grps, 0, sizeof(rdf_grps)); rdf_content = 0;
 

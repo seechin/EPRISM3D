@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 
                             A brief user guide
-                            EPRISM3D v 1.1.322
+                            EPRISM3D v 1.1.324
 
 -------------------------------------------------------------------------------
 
@@ -11,8 +11,8 @@ Before installation, please make the following files executable: configure,
 config_aux/*:
 chmod -R +x configure config_aux
 
-EPRISM uses the standard autoconf and automake for installations like most GNU
-programs. Normally, EPRISM is installed like:
+EPRISM3d uses the standard autoconf and automake for installations like most GNU
+programs. Normally, EPRISM3D is installed like:
 
 ./configure --with-fftw=$FFTW_HOME_FOLDER
 make
@@ -41,13 +41,13 @@ can use GROMACS 5.1~2019. GROMACS 2020 and later can't be used since they don't
 have the $GROMACS_HOME_FOLDER/include folder (unless you copy them from the
 folder you build GROMACS).
 
-EPRISM also uses pthread and ZLIB. These libraries are optional and detected
+EPRISM3D also uses pthread and ZLIB. These libraries are optional and detected
 automatically.
 
 If installed successfully, you should have the following files (the home folder
-of EPRISM can be redirected by --prefix):
+of EPRISM3D can be redirected by --prefix):
 
-EPRISM_HOME_FOLDER
+EPRISM3D_HOME_FOLDER
 ├── bin
 │   ├── eprism3d            The binary to perform 3DRISM and HI calculations
 │   ├── gensolvent          Helps to generate a solvent file
@@ -70,10 +70,10 @@ EPRISM_HOME_FOLDER
             ├── gvv.tip3p.1DDRISM.01A.txt   Water-water RDF (dr=0.01A)
             └── gvv.tip3p.1DDRISM.025A.txt  Water-water RDF (dr=0.025A)
 
-After installation, please add the paths of EPRISM to environment variables:
+After installation, please add the paths of EPRISM3D to environment variables:
 
-export PATH=$PATH:$EPRISM_HOME_FOLDER/bin
-export IETLIB=$EPRISM_HOME_FOLDER/share/eprism3d/solvent
+export PATH=$PATH:$EPRISM3D_HOME_FOLDER/bin
+export IETLIB=$EPRISM3D_HOME_FOLDER/share/eprism3d/solvent
 
 eprism3d will search solvent files in $IETLIB if it cannot find it from the
 current working directory.
@@ -82,7 +82,7 @@ current working directory.
 
 2. A quick user guide
 
-EPRISM needs three input files: the solute file, the solute conformation, and
+EPRISM3D needs three input files: the solute file, the solute conformation, and
 the solvent file.
 
 
@@ -132,9 +132,9 @@ correlation to the [solvent] section of tip3p.gaff:
 gvv 0.001 gvv.tip3p.1DDRISM.01A.txt
 
 
-2.3. Perform EPRISM calculation
+2.3. Perform EPRISM3D calculation
 
-(1) The EPRISM is typically performed as:
+(1) The EPRISM3D is typically performed as:
 
 eprism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
     solute/methane.pdb -nr 60x60x60 -rc 1 -do closure=hnc rism,step=1000 \
@@ -237,10 +237,11 @@ Here each solute will be computed with 2 threads (-nt 2), and 20 solutes
 
 i. Do 3DRISM for a super large system
 
-The EPRISM will detect the total amount of physical memory to prevent exceeding
-of physical memory. In most cases, computer OS allows to exceed the physical
-memory by using swap memories on hard drives. If you want to use more than your
-physical memories, then you can turn off the memory detection of eprism3d:
+The EPRISM3D will detect the total amount of physical memory to prevent
+exceeding of physical memory. In most cases, computer OS allows to exceed the
+physical memory by using swap memories on hard drives. If you want to use more
+than your physical memories, then you can turn off the memory detection of
+eprism3d:
 
 eprism3d -allow-exceed-ram ...
 

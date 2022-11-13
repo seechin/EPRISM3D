@@ -299,12 +299,6 @@ void build_uuv_base_on_force_field(IET_Param * sys, IET_arrays * arr, int es_alg
         if (sys->debug_level>=2) fprintf(sys->log(), "DEBUG:: electric field renormalization enabled for RISM\n");
     }
 
-    if (sys->uuv_cutoff>0){
-        if (sys->debug_level>=2) fprintf(sys->log(), "DEBUG:: uuv_cutoff set to %g\n", sys->uuv_cutoff);
-        size_t N4 = arr->nx*arr->ny*arr->nz*arr->nv;
-        for (size_t i4=0; i4<N4; i4++) if (arr->uuv[0][0][0][i4]>sys->uuv_cutoff) arr->uuv[0][0][0][i4] = sys->uuv_cutoff;
-    }
-
     if (sys->cavity_removal_correction){
         if (sys->debug_level>=2) fprintf(sys->log(), "DEBUG:: perform_cavity_removal_correction_uuv(crf=%g,cutoff=%g,sf=%g)\n", sys->cavity_removal_factor, sys->cavity_removal_ucutoff, sys->cavity_removal_size_factor);
         perform_cavity_removal_correction_uuv(sys, arr);

@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "0.321.2653";
+const char * software_version = "0.324.2660";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -107,7 +107,6 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
 #define FFPREFIX_AMBER          1
 #define FFPREFIX_GAFF           2
 #define FFPREFIX_OPLS           3
-const char * FFPREFIX_names[] = { "amber", "gaff", "opls" };
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 struct STKeywordTableUnit { int id; const char * name; };
 #define CoulAL_NONE             0
@@ -231,14 +230,6 @@ const char * IETAL_name[] = { "", "SSOZ", "RISM" };
 #define HIAL_LDI            2
 const char * HIAL_name[] = { "noHI", "HSHI", "LDI" };
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// for BG: integration pathway
-#define PERFORM_3DBG_PATHWAY_LJ         1
-#define PERFORM_3DBG_PATHWAY_LJ_2       2
-#define PERFORM_3DBG_PATHWAY_Coul       3
-#define PERFORM_3DBG_PATHWAY_Coul_2     4
-#define PERFORM_3DBG_PATHWAY_LJ_Coul    5
-#define PERFORM_3DBG_PATHWAY_HS         6
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #define IETCMD_NOP              1
 #define IETCMD_END              2
 #define IETCMD_DONE             3
@@ -304,7 +295,6 @@ const char * HIAL_name[] = { "noHI", "HSHI", "LDI" };
 #define IETCMD_v_excess_GF      261
 #define IETCMD_v_excess_RISM    262
 #define IETCMD_v_excess_hyb     263
-
 // test commands
 #define IETCMD_v_Yukawa         3001
 #define IETCMD_v_LocalCoulomb   3002

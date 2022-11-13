@@ -314,7 +314,7 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
                         int ivm = sys->av[iv].iaa; //fprintf(sys->log(), "%d -(mol)-> %d : %s\n", iv, ivm, sys->av[iv].name);
                         for (size_t i3=0; i3<N3; i3++){
                             arr->res[iv][0][0][i3] = (1+arr->huv[iv][0][0][i3]) * (arr->dd? arr->dd[ivm][0][0][i3] : sys->nbulk[ivm]);
-                            if (beta*arr->ulj[iv][0][0][i3]<sys->ucutoff_hs && arr->res[iv][0][0][i3]<MACHINE_REASONABLE_ERROR) arr->res[iv][0][0][i3] = MACHINE_REASONABLE_ERROR; // non hardsphere correction
+                            if (beta*arr->ulj[iv][0][0][i3]<sys->ccutoff && arr->res[iv][0][0][i3]<MACHINE_REASONABLE_ERROR) arr->res[iv][0][0][i3] = MACHINE_REASONABLE_ERROR; // non hardsphere correction
                         }
                     }
                     total_size += select_append_save_data(filter_array, filter_size, arr->rismhi_cache[2], &write_size, &write_original_size, pfout, szfn_out, flog, "guv", save_info_text, arr->nx, arr->ny, arr->nz, arr->nv, arr->res, time_stamp, sys, arr->compress_buffer, arr->compress_buffer_size); original_size += write_original_size;
@@ -528,8 +528,8 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
             build_uuv_base_on_force_field(sys, arr);
             size_t N3 = arr->nx*arr->ny*arr->nz; size_t N4 = N3 * sys->nv;
             for (size_t i4=0; i4<N4; i4++){
-                arr->huv[0][0][0][i4] = arr->uuv[0][0][0][i4]>sys->ucutoff_hs? -1 : 0;
-                arr->cuv[0][0][0][i4] = arr->uuv[0][0][0][i4]>sys->ucutoff_hs? -sys->ucutoff_hs : -arr->uuv[0][0][0][i4];
+                arr->huv[0][0][0][i4] = arr->uuv[0][0][0][i4]>sys->ccutoff? -1 : 0;
+                arr->cuv[0][0][0][i4] = arr->uuv[0][0][0][i4]>sys->ccutoff? -sys->ccutoff : -arr->uuv[0][0][0][i4];
             }
         } else if (cmd[ic].command>1500 && cmd[ic].command<2000){  // RISM
             int ietal = cmd[ic].command - 1500; // SSOZ, RISM, etc

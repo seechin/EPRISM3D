@@ -150,9 +150,6 @@ const char * szHelpAdvanced = "\
     -page[-]size 4096       page size in compressed TS4S file\n\
     -zeta-line/term/item    define a zeta term, see [zeta] for details\n\
     -dielect-hi             dielect const for Coulomb based HI theories\n\
-    -ccutoff 5              cutoff for hybrid closures\n\
-    -cceil 148              (-gceil) = exp(ccutoff), cutoff for hybrid closures\n\
-    -cutoff-risp -1         cutoff for RISP. Default negative: number_of_steps\n\
     -dielect-y[ukawa] 1     dielectric const for Yukawa\n\
     -gcutoff-liquid         Liquid density threshold for reported correlations\n\
     -gcutoff-ef             Liquid density threshold for electric field energy\n\
@@ -196,8 +193,7 @@ const char * szHelpSecRISM3D_HI = "\
     -errtolhi               (-errtol) HI error tolerance, default: 1e-12\n\
     -dipole                 dipoles for all solvent molecules\n\
     -zvv, -zeta             zeta file in r-space and dr, nvm^2 cols and -ff unit\n\
-    -scale.zeta             scaling factors for each molecule\n\
-    -ccutoff-[hs]hi         potential cutoff for theta function in HSHI\n\
+    -scale-zeta             scaling factors for each molecule\n\
     -lsa, -lsb              default: -lsa 0.3 -lsb auto\n\
                             Auto value of B = (lnλ - <ab|zeta|ab>/<c|c>)/Aρ\n\
     -theta                  theta cutoff of potential (in kT), default: -theta 5\n\
@@ -829,10 +825,6 @@ int analysis_parameter_line(IET_Param * sys, char * argv[], int * argi, int argc
         int max_grp = sys->rdf_grps[0].grp; for (int i=1; i<sys->n_rdf_grps; i++) if (sys->rdf_grps[i].grp>max_grp) max_grp = sys->rdf_grps[i].grp;
         for (int i=0; i<=sys->n_rdf_grps; i++) if (sys->rdf_grps[i].grp<0) sys->rdf_grps[i].grp = ++max_grp;
 //for (int i=0; i<sys->n_rdf_grps; i++) printf("%d %d.%s.%s - %d.%s.%s = %d\n", i+1, sys->rdf_grps[i].is, sys->rdf_grps[i].ms, sys->rdf_grps[i].as, sys->rdf_grps[i].iv, sys->rdf_grps[i].mv, sys->rdf_grps[i].av, sys->rdf_grps[i].grp);
-    } else if (key == "-gcutoff-liquid" || key == "gcutoff-liquid" || key == "--gcutoff-liquid" || key == "-gcutoff_liquid" || key == "gcutoff_liquid" || key == "--gcutoff_liquid" || key == "-gcutoff" || key == "gcutoff" || key == "--gcutoff"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            sys->gcutoff_liquid_occupation = atof(argv[++i]);
-        }
     } else if (key == "-gcutoff-ef" || key == "gcutoff-ef" || key == "--gcutoff-ef" || key == "-gcutoff_ef" || key == "gcutoff_ef" || key == "--gcutoff_ef"){
         if (i+1<argc && StringNS::is_string_number(argv[i+1])){
             sys->gcutoff_ef_occupation = atof(argv[++i]);
@@ -1135,14 +1127,8 @@ int analysis_parameter_line(IET_Param * sys, char * argv[], int * argi, int argc
             sys->external_electrostatic_field.z = atof(argv[i+3]);
             i += 3;
         }
-    } else if (key=="-gcutoff" || key=="--gcutoff" || key=="gcutoff" || key=="-ccutoff" || key=="--ccutoff" || key=="ccutoff"){
+    } else if (key=="-ccutoff" || key=="--ccutoff" || key=="ccutoff"){
         if (i+1<argc && StringNS::is_string_number(argv[i+1])) sys->ccutoff = atof(argv[++i]);
-    } else if (key=="-gceil" || key=="--gceil" || key=="gceil" || key=="-cceil" || key=="--cceil" || key=="cceil" || key=="-closure-ceil" || key=="--closure-ceil" || key=="closure-ceil" || key=="-closure_ceil" || key=="--closure_ceil" || key=="closure_ceil"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            double exp_cutoff = atof(argv[++i]);
-            if (exp_cutoff>0) sys->ccutoff = log(exp_cutoff);
-            else { fprintf(sys->log(), "%s%s : %s[%d] : invalid HNC ceil %s%s\n", istty?color_string_of_synerr:"", software_name, get_second_fn(script_name), script_line, argv[i], istty?color_string_end:""); ret = 1; }
-        }
     } else if (key=="-dynamic-delvv" || key=="--dynamic-delvv" || key=="dynamic-delvv" || key=="-dynamic_delvv" || key=="--dynamic_delvv" || key=="dynamic_delvv"){
         sys->closure_enhance_level = 1;
         if (i+1<argc && StringNS::is_string_number(argv[i+1])){
@@ -1270,29 +1256,9 @@ int analysis_parameter_line(IET_Param * sys, char * argv[], int * argi, int argc
         sys->n_degree_of_freedom = 0; while (i+1<argc && StringNS::is_string_number(argv[i+1])){
             i++; if (sys->n_degree_of_freedom<MAX_SOL) sys->degree_of_freedom[sys->n_degree_of_freedom++] = atof(argv[i]);
         }
-    } else if (key=="-scale.zeta" || key=="--scale.zeta" || key=="scale.zeta"){
+    } else if (key=="-scale-zeta" || key=="--scale-zeta" || key=="scale-zeta" || key=="-scale_zeta" || key=="--scale_zeta" || key=="scale_zeta"){
         sys->n_zeta_scaling_factor = 0; while (i+1<argc && StringNS::is_string_number(argv[i+1])){
             i++; if (sys->n_zeta_scaling_factor<MAX_SOL) sys->zeta_scaling_factor[sys->n_zeta_scaling_factor++] = atof(argv[i]);
-        }
-    } else if (key=="-ucutoff-hi" || key=="--ucutoff-hi" || key=="ucutoff-hi" || key=="-ucutoff_hi" || key=="--ucutoff_hi" || key=="ucutoff_hi" || key=="-ucutoff-hshi" || key=="--ucutoff-hshi" || key=="ucutoff-hshi" || key=="-ucutoff_hshi" || key=="--ucutoff_hshi" || key=="ucutoff_hshi"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            i++; sys->ucutoff_hs = atof(argv[i]);
-        }
-    } else if (key=="-cutoff-hs" || key=="--cutoff-hs" || key=="cutoff-hs" || key=="-cutoff_hs" || key=="--cutoff_hs" || key=="cutoff_hs"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            i++; sys->ucutoff_hs = atof(argv[i]);
-        }
-    } else if (key=="-cutoff-risp" || key=="--cutoff-risp" || key=="cutoff-risp" || key=="-cutoff_risp" || key=="--cutoff_risp" || key=="cutoff_risp" || key=="-ucutoff-risp" || key=="--ucutoff-risp" || key=="ucutoff-risp" || key=="-ucutoff_risp" || key=="--ucutoff_risp" || key=="ucutoff_risp"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            i++; sys->ucutoff_risp = atof(argv[i]);
-        }
-    } else if (key=="-uuv-cutoff" || key=="--uuv-cutoff" || key=="uuv-cutoff" || key=="-uuv_cutoff" || key=="--uuv_cutoff" || key=="uuv_cutoff"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            i++; sys->uuv_cutoff = atof(argv[i]);
-        }
-    } else if (key=="-ccutoff-hi" || key=="--ccutoff-hi" || key=="ccutoff-hi" || key=="-ccutoff_hi" || key=="--ccutoff_hi" || key=="ccutoff_hi" || key=="-ccutoff-hshi" || key=="--ccutoff-hshi" || key=="ccutoff-hshi" || key=="-ccutoff_hshi" || key=="--ccutoff_hshi" || key=="ccutoff_hshi" || key=="-ccutoff-theta" || key=="--ccutoff-theta" || key=="ccutoff-theta" || key=="-ccutoff_theta" || key=="--ccutoff_theta" || key=="ccutoff_theta"){
-        if (i+1<argc && StringNS::is_string_number(argv[i+1])){
-            i++; sys->ccutoff_hi = atof(argv[i]);
         }
     } else if (key=="-dipole" || key=="--dipole" || key=="dipole"){ sys->ndipole = 0;
         while (i+1<argc && StringNS::is_string_number(argv[i+1])){
@@ -2012,11 +1978,17 @@ bool analysis_command(IET_Param * sys, char * line, const char * line_orig, cons
             cmd_type = IETCMD_HOLD; cmd.command = IETCMD_HOLD; cmd.step = 0;
       // cmd: set values of arrays
         } else if (sl[0]=="closure"){   cmd_type = 21; cmd.command = IETCMD_CLOSURE;
+        } else if (sl[0]=="closures"){  cmd_type = 21; cmd.command = IETCMD_CLOSURE;
         } else if (sl[0]=="closure-a" || sl[0]=="closure_a"){ cmd_type = 21; cmd.command = IETCMD_CLOSURE_A;
+        } else if (sl[0]=="closures-a" || sl[0]=="closures_a"){ cmd_type = 21; cmd.command = IETCMD_CLOSURE_A;
         } else if (sl[0]=="closure-m" || sl[0]=="closure_m"){ cmd_type = 21; cmd.command = IETCMD_CLOSURE;
+        } else if (sl[0]=="closures-m" || sl[0]=="closures_m"){ cmd_type = 21; cmd.command = IETCMD_CLOSURE;
         } else if (sl[0]=="cf"){        cmd_type = 22; cmd.command = IETCMD_CF;
+        } else if (sl[0]=="cfs"){       cmd_type = 22; cmd.command = IETCMD_CF;
         } else if (sl[0]=="closure-factor" || sl[0]=="closure_factor"){ cmd_type = 22; cmd.command = IETCMD_CF;
+        } else if (sl[0]=="closure-factors" || sl[0]=="closure_factors"){ cmd_type = 22; cmd.command = IETCMD_CF;
         } else if (sl[0]=="closure-factor-a" || sl[0]=="closure_factor_a"){ cmd_type = 22; cmd.command = IETCMD_CF_A;
+        } else if (sl[0]=="closure-factors-a" || sl[0]=="closure_factors_a"){ cmd_type = 22; cmd.command = IETCMD_CF_A;
         } else if (sl[0]=="cf-a" || sl[0]=="cf_a"){ cmd_type = 22; cmd.command = IETCMD_CF_A;
         } else if (sl[0]=="closure-factor-m" || sl[0]=="closure_factor_m"){ cmd_type = 22; cmd.command = IETCMD_CF;
         } else if (sl[0]=="cf-m" || sl[0]=="cf_m"){ cmd_type = 22; cmd.command = IETCMD_CF;

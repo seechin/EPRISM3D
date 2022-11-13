@@ -45,11 +45,11 @@ namespace RISMHI3D_RISMNS {
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PLHNC){
-                double expC = exp(cutoff);
+                double expC = exp(factor);
                 for (size_t i3=i3begin; i3<i3end; i3++){
                     double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
                     t = -uuv[i3] + (hhere - cuv[i3]);
-                    t = (t>cutoff? t+expC-cutoff : exp(t)) * nbulk_rism - 1;
+                    t = (t>factor? t+expC-factor : exp(t)) * nbulk_rism - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_HARDSPHERE){
@@ -557,7 +557,7 @@ namespace RISMHI3D_RISMNS {
         int closure= sys->closures[ic];
         double closure_factor = sys->closure_factors[ic];
         if (closure==CLOSURE_PLHNC){
-            snprintf(additional_buffer, sizeof_additional_buffer, "(%g)", sys->ccutoff);
+            snprintf(additional_buffer, sizeof_additional_buffer, "(%g)", closure_factor);
         } else {
             bool display_additional = false;
             for (int i=0; !display_additional&&i<sizeof(closures_needto_display_factor)/sizeof(closures_needto_display_factor[0]); i++) if (closure==closures_needto_display_factor[i]) display_additional = true;

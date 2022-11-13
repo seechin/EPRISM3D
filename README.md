@@ -2,7 +2,7 @@
 
 # The Expanded Package of 3DRISM
 
-v 1.1.323 (c) 2022 Cao Siqin
+v 1.1.324 (c) 2022 Cao Siqin
 
 All rights reserved. You can use and modify the software under the [GNU Lesser General Public License v3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 

@@ -1,3 +1,10 @@
+# 1.1.324
+
+Nov 8, 2022
+
+Change: the cutoff of PLHNC is now set in closure-factor command (-cmd cf=...)
+
+
 # 1.1.322 & 1.1.323
 
 Nov 3-4, 2022

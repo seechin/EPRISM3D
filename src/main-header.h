@@ -33,7 +33,7 @@
 #ifdef PACKAGE_VERSION
   #define DISTRIBUTE_VERSION    PACKAGE_VERSION
 #else
-  #define DISTRIBUTE_VERSION    "1.1.323"
+  #define DISTRIBUTE_VERSION    "1.1.324"
 #endif
 #ifndef DISTRIBUTE_VERSION
     const char * szLicence = "";

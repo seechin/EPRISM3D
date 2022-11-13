@@ -52,18 +52,18 @@ void subroutine_hi_solver(IET_Param * sys, IET_arrays * arr, int id){
     }
 }
 
-void prepare_hi_theta(IET_Param * sys, IET_arrays * arr, int * hi_param_indicator, double * hi_param, int n_hi_param){
+void prepare_hi_theta(IET_Param * sys, IET_arrays * arr){
     for (int iv=0; iv<sys->nvm; iv++) for (int iz=0; iz<arr->nz; iz++) for (int iy=0; iy<arr->ny; iy++) for (int ix=0; ix<arr->nx; ix++){
         double U = atomised_molecule_uv_potential(sys, arr, iv, ix, iy ,iz);
-        if (U >= sys->ucutoff_hs) arr->theta[iv][iz][iy][ix] = 0; else arr->theta[iv][iz][iy][ix] = 1;
+        if (U >= sys->ccutoff) arr->theta[iv][iz][iy][ix] = 0; else arr->theta[iv][iz][iy][ix] = 1;
     }
 
   #ifdef _EXPERIMENTAL_
-    post_prepare_theta(sys, arr, hi_param_indicator, hi_param, n_hi_param);
+    post_prepare_theta(sys, arr);
   #endif
 }
 
-bool prepare_phi(IET_Param * sys, IET_arrays * arr, int * hi_param_indicator, double * hi_param, int n_hi_param){
+bool prepare_phi(IET_Param * sys, IET_arrays * arr){
     FILE * flog = sys->log();
     bool is_out_tty = sys->is_log_tty;
     bool success = false;
@@ -118,10 +118,10 @@ bool perform_hi(IET_Param * sys, IET_arrays * arr, int * hi_param_indicator, dou
     size_t N3 = arr->nx * arr->ny * arr->nz; size_t N4 = sys->nv * N3; size_t N4m = sys->nvm * N3;
 
   // step 1: prepare theta
-    prepare_hi_theta(sys, arr, hi_param_indicator, hi_param, n_hi_param);
+    prepare_hi_theta(sys, arr);
 
   // step 2: preparation, majorly phi
-    prepare_phi(sys, arr, hi_param_indicator, hi_param, n_hi_param);
+    prepare_phi(sys, arr);
 
   // step 3: prepare initial guess of n[]
     for (int iv=0; iv<sys->nvm; iv++) for (size_t i3=0; i3<=N3; i3++) arr->dd[iv][0][0][i3] = sys->nbulk[iv];
@@ -214,7 +214,7 @@ bool perform_ldi(IET_Param * sys, IET_arrays * arr, int * hi_param_indicator, do
     for (int iv=0; iv<sys->nvm; iv++){
         for (size_t i3=0; i3<N3; i3++){
             double U = atomised_molecule_uv_potential(sys, arr, iv, i3);
-            arr->phi[iv][0][0][i3] = U>sys->ucutoff_hs? 0 : 1;
+            arr->phi[iv][0][0][i3] = U>sys->ccutoff? 0 : 1;
         }
     }
     perform_3rx1k_convolution(&arr->fftw_mp, arr->phi, arr->nx, arr->ny, arr->nz, arr->box, sys->nvm, sys->nvm, arr->ld_kernel, arr->dk_nhkvv, sys->xvv_k_shift, arr->n_nhkvv, arr->dd, arr->fftin, arr->fftout, arr->planf, arr->planb, true);
