@@ -319,7 +319,7 @@ double lap_display_timers(FILE * fp, bool display=true){
         this_time = __timer[5] + __timer[6] + __timer[7] + __timer[8];
         if (this_time>DISPLAY_TIMECOST_CRI*__total_timer) fprintf(fp, "  calculation       %12s s\n", display_time(this_time, buf));
 
-        fprintf(fp, "  total_time        %12s s\n", display_time(__total_timer, buf));
+        fprintf(fp, "  time_in_total     %12s s\n", display_time(__total_timer, buf));
     }
     return __total_timer;
 }

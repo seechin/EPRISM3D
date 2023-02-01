@@ -698,21 +698,6 @@ int clearup_zero_xvv(__REAL__ *** xvv, int nv, int mv, int xvv_length, __REAL__ 
     }
     return n_xvv_cleared;
 }
-__REAL__ *** build_xvv_pointer_skip_missing(__REAL__ *** xvv, int nv, int mv, int xvv_process_length, IET_Param * sys, const char * title){
-    int xvv_length = xvv_process_length; // &xvv[0][1][0] - &xvv[0][0][0];
-    __REAL__ *** convolution_xvv = init_tensor3d_pointer(xvv, nv, mv, xvv_length);
-    int n_xvv_cleared = clearup_zero_xvv(xvv, nv, mv, xvv_process_length, convolution_xvv);
-    if (n_xvv_cleared>0){
-        if (sys && sys->debug_level>=2 && title){
-            fprintf(sys->log(), "DEBUG:: clearup_zero_%s: %d of %d", title, n_xvv_cleared, nv*mv);
-            if (sys->debug_level>=3){ fprintf(sys->log(), ":");
-                for (int i=0; i<nv; i++) for (int j=0; j<mv; j++) if (!convolution_xvv[i][j]) fprintf(sys->log(), " %s.%s-%s.%s", sys->av[i].mole, sys->av[i].name, sys->av[j].mole, sys->av[j].name);
-            }
-            fprintf(sys->log(), "\n");
-        }
-    }
-    return convolution_xvv;
-}
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 int __read_solvent_wvv(IET_Param * sys, char * filename, IET_arrays * arr, int nv){
     if (!filename || !filename[0]) return -1;

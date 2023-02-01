@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "0.324.2660";
+const char * software_version = "0.325.2692";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -613,6 +613,17 @@ bool main_initialization(int argc, char * argv[], IET_Param ** _sys, IET_arrays 
         generate_xvv_from_wvv_and_nhkvv(sys, arr);
     }
     if (success && (sys->mode_test || sys->debug_level>=3) && arr->wvv && arr->nhkvv) debug_show_rism_xvv_matrix(sys, arr, sys->nv, sys->nvm);
+    if (success){
+        if (arr->wvv) arr->convolution_wvv = arr->wvv;
+        if (arr->nhkvv){
+            for (int i=0; i<n_szfn_gvvs; i++){
+                arr->convolution_nhkvvs[i] = arr->nhkvvs[i];
+                arr->convolution_nhkvv = arr->convolution_nhkvvs[0];
+            }
+        }
+        if (arr->zeta) arr->convolution_zeta = arr->zeta;
+    }
+
   lap_timer_analysis_param();
 
   // create threads or forks

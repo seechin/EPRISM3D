@@ -541,10 +541,13 @@ namespace RISMHI3D_RISMNS {
       // 1. arr->clr = clr = - ulr
         for (size_t i4=0; i4<N4; i4++) arr->clr[0][0][0][i4] = - arr->ulr[0][0][0][i4];
       // 2. arr->hlr = clr ρv * χvv
+        __REAL__ *** xvv = arr->xvv;
+        __REAL__ *** wvv = arr->wvv;
+        __REAL__ *** nhkvv = arr->nhkvv;
         if (sys->hlr_no_hi){
-            perform_rism_equation_without_hi(sys, arr, arr->clr, arr->hlr, arr->res, arr->wvv, arr->nhkvv);
+            perform_rism_equation_without_hi(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
         } else {
-            perform_rism_equation(sys, arr, arr->clr, arr->hlr, arr->res, arr->wvv, arr->nhkvv);
+            perform_rism_equation(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
         }
     }
 

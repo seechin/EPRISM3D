@@ -138,7 +138,6 @@ const char * szHelpAdvanced = "\
     -delvv 0.7              (-delrism, -delhi) the scaling factor of SCF stepin\n\
     -dynamic-delvv 1        (-closure-enhance) dynamic factor for convergence\n\
     -xvv-extend 0           number of times to extend wvv&nhkvv\n\
-    -xvv-scheme so          scheme for xvv, can be so=amber/no/sc/sx/s1\n\
     -xvv-scale              factors to scale hvv, order: columns in [gvv_map]\n\
     -allow/-forbid          turn on/off options:\n\
         pme                 allow/forbid PME, default on\n\
