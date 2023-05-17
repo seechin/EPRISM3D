@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "0.325.2692";
+const char * software_version = "1.2.2.329";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -71,26 +71,23 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
     const char * color_string_of_synwarn = "";
 #endif
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#define PI  3.1415926535897932384626433832795
-#define EE  2.7182818284590452353602874713527
-#define COULCOOEF 138.9354846
-#define MAX_RDF_GRPS            1000        // Max number of groups to output RDF
-#define INITIAL_SOLUTE_ATOMS    500         // page size for solute atoms
+const int MAX_RDF_GRPS          = 1000;     // Max number of groups to output RDF
+const int INITIAL_SOLUTE_ATOMS  = 500;      // page size for solute atoms
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #ifdef _LOCALPARALLEL_
-#define MPTASK_NONE             0
-#define MPTASK_TERMINATE        -1
-#define MPTASK_FFTW             11
-#define MPTASK_MERGE_FFT_DATA   12
-#define MPTASK_FFSR             13
-#define MPTASK_MERGE_FF_DATA    14
-#define MPTASK_RISM_CLOSURE     21
-#define MPTASK_HI_SOLVER        23
-#define MPTASK_HI_POTENTIAL     24
-#define MPTASK_DIIS             25
-#define MPTASK_DIIS_WEIGHT      26
-#define MPTASK_DIIS_STEPIN      27
-#define MPTASK_RUN              28
+const int MPTASK_NONE           = 0;
+const int MPTASK_TERMINATE      = -1;
+const int MPTASK_FFTW           = 11;
+const int MPTASK_MERGE_FFT_DATA = 12;
+const int MPTASK_FFSR           = 13;
+const int MPTASK_MERGE_FF_DATA  = 14;
+const int MPTASK_RISM_CLOSURE   = 21;
+const int MPTASK_HI_SOLVER      = 23;
+const int MPTASK_HI_POTENTIAL   = 24;
+const int MPTASK_DIIS           = 25;
+const int MPTASK_DIIS_WEIGHT    = 26;
+const int MPTASK_DIIS_STEPIN    = 27;
+const int MPTASK_RUN            = 28;
 #endif
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #include    "crc32_zlib.h"
@@ -103,16 +100,16 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
 #include    "main-common.cpp"
 #include    "main-matrix.cpp"
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#define FFPREFIX_NONE           0
-#define FFPREFIX_AMBER          1
-#define FFPREFIX_GAFF           2
-#define FFPREFIX_OPLS           3
+const int FFPREFIX_NONE         = 0;
+const int FFPREFIX_AMBER        = 1;
+const int FFPREFIX_GAFF         = 2;
+const int FFPREFIX_OPLS         = 3;
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 struct STKeywordTableUnit { int id; const char * name; };
-#define CoulAL_NONE             0
-#define CoulAL_Coulomb          0
-#define CoulAL_Dielect          1
-#define CoulAL_YukawaFFT        2
+const int CoulAL_NONE           = 0;
+const int CoulAL_Coulomb        = 0;
+const int CoulAL_Dielect        = 1;
+const int CoulAL_YukawaFFT      = 2;
 const char * CoulAL_names[] = { "Coulomb", "dielect", "YukawaFFT" };
 STKeywordTableUnit CoulAL_alias [] = {
     { CoulAL_Coulomb            , "Coul" },
@@ -123,38 +120,38 @@ STKeywordTableUnit CoulAL_alias [] = {
     { CoulAL_NONE               , "none" },
     { CoulAL_NONE               , "no" }
 };
-#define CLOSURE_NONE            0
-#define CLOSURE_HNC             1
-#define CLOSURE_PLHNC           2
-#define CLOSURE_HARDSPHERE      3
-#define CLOSURE_MSA             4
-#define CLOSURE_KGK             5
-#define CLOSURE_KH              6
-#define CLOSURE_PSE             7
-#define CLOSURE_PSE2            8
-#define CLOSURE_PSE3            9
-#define CLOSURE_PSE4            10
-#define CLOSURE_PSE5            11
-#define CLOSURE_PSE6            12
-#define CLOSURE_PSE7            13
-#define CLOSURE_PSE8            14
-#define CLOSURE_PSE9            15
-#define CLOSURE_PSE10           16
-#define CLOSURE_PY              17
-#define CLOSURE_HNCB            18
-#define CLOSURE_D2              19
-#define CLOSURE_MS              20
-#define CLOSURE_MSHNC           21
-#define CLOSURE_BPGG            22
-#define CLOSURE_BPGGHNC         23
-#define CLOSURE_VM              24
-#define CLOSURE_MHNC            25
-#define CLOSURE_MP              26
-#define CLOSURE_RBC_HNC         27
-#define CLOSURE_RBC_KH          28
-#define CLOSURE_USER1           29
-#define CLOSURE_USER2           30
-#define CLOSURE_USER3           31
+const int CLOSURE_NONE          = 0;
+const int CLOSURE_HNC           = 1;
+const int CLOSURE_PLHNC         = 2;
+const int CLOSURE_HARDSPHERE    = 3;
+const int CLOSURE_MSA           = 4;
+const int CLOSURE_KGK           = 5;
+const int CLOSURE_KH            = 6;
+const int CLOSURE_PSE           = 7;
+const int CLOSURE_PSE2          = 8;
+const int CLOSURE_PSE3          = 9;
+const int CLOSURE_PSE4          = 10;
+const int CLOSURE_PSE5          = 11;
+const int CLOSURE_PSE6          = 12;
+const int CLOSURE_PSE7          = 13;
+const int CLOSURE_PSE8          = 14;
+const int CLOSURE_PSE9          = 15;
+const int CLOSURE_PSE10         = 16;
+const int CLOSURE_PY            = 17;
+const int CLOSURE_HNCB          = 18;
+const int CLOSURE_D2            = 19;
+const int CLOSURE_MS            = 20;
+const int CLOSURE_MSHNC         = 21;
+const int CLOSURE_BPGG          = 22;
+const int CLOSURE_BPGGHNC       = 23;
+const int CLOSURE_VM            = 24;
+const int CLOSURE_MHNC          = 25;
+const int CLOSURE_MP            = 26;
+const int CLOSURE_RBC_HNC       = 27;
+const int CLOSURE_RBC_KH        = 28;
+const int CLOSURE_USER1         = 29;
+const int CLOSURE_USER2         = 30;
+const int CLOSURE_USER3         = 31;
 const int closures_needto_display_factor[] = {
     CLOSURE_PLHNC, CLOSURE_PSE
 };
@@ -219,85 +216,85 @@ STKeywordTableUnit CLOSURE_alias[200] = {
     { CLOSURE_RBC_KH            , "RBC_KH" }
 };
 int n_CLOSURE_alias = sizeof(CLOSURE_alias)/sizeof(CLOSURE_alias[0]);
-#define IETAL_NONE          0
-#define IETAL_SSOZ          1
-#define IETAL_RRISM         2
+const int IETAL_NONE        = 0;
+const int IETAL_SSOZ        = 1;
+const int IETAL_RRISM       = 2;
 const char * IETAL_name[] = { "", "SSOZ", "RISM" };
-#define HIAL_NONE           0
-#define HIAL_NOHI           0
-#define HIAL_HI             1
-#define HIAL_HSHI           1
-#define HIAL_LDI            2
+const int HIAL_NONE         = 0;
+const int HIAL_NOHI         = 0;
+const int HIAL_HI           = 1;
+const int HIAL_HSHI         = 1;
+const int HIAL_LDI          = 2;
 const char * HIAL_name[] = { "noHI", "HSHI", "LDI" };
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#define IETCMD_NOP              1
-#define IETCMD_END              2
-#define IETCMD_DONE             3
-#define IETCMD_CLEAR            4
-#define IETCMD_RESET            5
-#define IETCMD_SET              10
-#define IETCMD_SCALE            11
-#define IETCMD_LOAD             12
-#define IETCMD_SAVE             13
-#define IETCMD_SAVE_EXIST       14
-#define IETCMD_SAVE_FILTER      15
-#define IETCMD_DISPLAY          16
-#define IETCMD_REPORT           17
-#define IETCMD_HI_SOLVER        -18
-#define IETCMD_LSE              18
-#define IETCMD_CLOSURE          21
-#define IETCMD_CLOSURE_A        22
-#define IETCMD_CF               23
-#define IETCMD_CF_A             24
-#define IETCMD_DIELECT          25
-#define IETCMD_DENSITY          26
-#define IETCMD_BUILD_FF         27
-#define IETCMD_BUILD_UUV        28
-#define IETCMD_HOLD             29
-#define IETCMD_RDF_CONTENT      30
-#define IETCMD_TEMPERATURE      31
-#define IETCMD_TEST             98
-#define IETCMD_TEST_SAVE        99
-#define IETCMD_v_temperature    101
-#define IETCMD_v_Coulomb        102
-#define IETCMD_v_dielect_y      104
-#define IETCMD_v_rbohr          105
-#define IETCMD_v_cmd            200
-#define IETCMD_v_uuv            201
-#define IETCMD_v_ulr            202
-#define IETCMD_v_ulj            203
-#define IETCMD_v_ucoul          204
-#define IETCMD_v_ucoul2         205
-#define IETCMD_v_ucoulsr        206
-#define IETCMD_v_ucoullr        207
-#define IETCMD_v_dd             222
-#define IETCMD_v_huv            223
-#define IETCMD_v_hlr            224
-#define IETCMD_v_guv            225
-#define IETCMD_v_cuv            226
-#define IETCMD_v_csr            227
-#define IETCMD_v_clr            228
-#define IETCMD_v_rmin           231
-#define IETCMD_v_rdf            235
-#define IETCMD_v_Euv            236
-#define IETCMD_v_Ef             238
-#define IETCMD_v_DeltaN         239
-#define IETCMD_v_DeltaN0        240
-#define IETCMD_v_TS             241
-#define IETCMD_v_rism_dielect   242
-#define IETCMD_v_HFE            247
-#define IETCMD_v_ddp            248
-#define IETCMD_v_theta          249
-#define IETCMD_v_ld             250
-#define IETCMD_v_mass           251
-#define IETCMD_v_PMV            252
-#define IETCMD_v_Ef1            253
-#define IETCMD_v_excess_GF      261
-#define IETCMD_v_excess_RISM    262
-#define IETCMD_v_excess_hyb     263
+const int IETCMD_NOP            =   1;
+const int IETCMD_END            =   2;
+const int IETCMD_DONE           =   3;
+const int IETCMD_CLEAR          =   4;
+const int IETCMD_RESET          =   5;
+const int IETCMD_SET            =  10;
+const int IETCMD_SCALE          =  11;
+const int IETCMD_LOAD           =  12;
+const int IETCMD_SAVE           =  13;
+const int IETCMD_SAVE_EXIST     =  14;
+const int IETCMD_SAVE_FILTER    =  15;
+const int IETCMD_DISPLAY        =  16;
+const int IETCMD_REPORT         =  17;
+const int IETCMD_HI_SOLVER      = -18;
+const int IETCMD_LSE            =  18;
+const int IETCMD_CLOSURE        =  21;
+const int IETCMD_CLOSURE_A      =  22;
+const int IETCMD_CF             =  23;
+const int IETCMD_CF_A           =  24;
+const int IETCMD_DIELECT        =  25;
+const int IETCMD_DENSITY        =  26;
+const int IETCMD_BUILD_FF       =  27;
+const int IETCMD_BUILD_UUV      =  28;
+const int IETCMD_HOLD           =  29;
+const int IETCMD_RDF_CONTENT    =  30;
+const int IETCMD_TEMPERATURE    =  31;
+const int IETCMD_TEST           =  98;
+const int IETCMD_TEST_SAVE      =  99;
+const int IETCMD_v_temperature  = 101;
+const int IETCMD_v_Coulomb      = 102;
+const int IETCMD_v_dielect_y    = 104;
+const int IETCMD_v_rbohr        = 105;
+const int IETCMD_v_cmd          = 200;
+const int IETCMD_v_uuv          = 201;
+const int IETCMD_v_ulr          = 202;
+const int IETCMD_v_ulj          = 203;
+const int IETCMD_v_ucoul        = 204;
+const int IETCMD_v_ucoul2       = 205;
+const int IETCMD_v_ucoulsr      = 206;
+const int IETCMD_v_ucoullr      = 207;
+const int IETCMD_v_dd           = 222;
+const int IETCMD_v_huv          = 223;
+const int IETCMD_v_hlr          = 224;
+const int IETCMD_v_guv          = 225;
+const int IETCMD_v_cuv          = 226;
+const int IETCMD_v_csr          = 227;
+const int IETCMD_v_clr          = 228;
+const int IETCMD_v_rmin         = 231;
+const int IETCMD_v_rdf          = 235;
+const int IETCMD_v_Euv          = 236;
+const int IETCMD_v_Ef           = 238;
+const int IETCMD_v_DeltaN       = 239;
+const int IETCMD_v_DeltaN0      = 240;
+const int IETCMD_v_TS           = 241;
+const int IETCMD_v_rism_dielect = 242;
+const int IETCMD_v_HFE          = 247;
+const int IETCMD_v_ddp          = 248;
+const int IETCMD_v_theta        = 249;
+const int IETCMD_v_ld           = 250;
+const int IETCMD_v_mass         = 251;
+const int IETCMD_v_PMV          = 252;
+const int IETCMD_v_Ef1          = 253;
+const int IETCMD_v_excess_GF    = 261;
+const int IETCMD_v_excess_RISM  = 262;
+const int IETCMD_v_excess_hyb   = 263;
 // test commands
-#define IETCMD_v_Yukawa         3001
-#define IETCMD_v_LocalCoulomb   3002
+const int IETCMD_v_Yukawa       = 3001;
+const int IETCMD_v_LocalCoulomb = 3002;
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 char info_file_name[MAX_PATH];
 const char * help_search_str = nullptr;
@@ -320,6 +317,8 @@ char szfn_rdf[MAX_PATH];
     #include "experimental.h"
 #endif
 #include    "main-atom-lists.h"
+#include    "read_top.h"
+#include    "main-hi-solver.cpp"
 #include    "main-sys.h"
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #ifdef _LOCALPARALLEL_
@@ -504,8 +503,10 @@ bool main_initialization(int argc, char * argv[], IET_Param ** _sys, IET_arrays 
         if (sys->debug_level>=1) fprintf(sys->log(), "debug:: read_solute_ff(%s%s%s)\n", sys->is_log_tty?prompt_path_prefix:"\"", szfn_solute, sys->is_log_tty?prompt_path_suffix:"\"");
         if (file_extension(szfn_solute) == "prmtop"){
             if (read_prmtop_ff(sys, szfn_solute) <= 0){ success = false; if (_error) *_error = error; if (_syntax_error) *_syntax_error = true; return false; }
+        } else if (file_extension(szfn_solute) == "top"){
+            success = read_top_solute_ff(sys, szfn_solute);
         } else {
-            if (file_extension(szfn_solute) == "top") fprintf(flog, "%s : solute file %s may need to be converted with gmxtop2solute\n", software_name, get_second_fn(szfn_solute));
+            //if (file_extension(szfn_solute) == "top") fprintf(flog, "%s : solute file %s may need to be converted with gmxtop2solute\n", software_name, get_second_fn(szfn_solute));
             if (read_solute_ff(sys, szfn_solute) <= 0){ success = false; if (_error) *_error = error; if (_syntax_error) *_syntax_error = true; return false; }
         }
     }

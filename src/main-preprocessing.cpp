@@ -145,7 +145,7 @@ int read_solute_ff(IET_Param * sys, const char * filename, bool allow = false){
                 for (int ipm=8; ipm<nwa; ipm++){
                     if (sl[ipm].length>5&&(StringNS::string(sl[ipm].text, 5)=="bond:"||StringNS::string(sl[ipm].text, 5)=="bond=")){
                         StringNS::string bline = StringNS::string(&sl[ipm].text[5], sl[ipm].length-5);
-                        StringNS::string bl[MAX_BONDS_PER_ATOM]; int nbl = StringNS::analysis_csv_line(bline, bl, MAX_BONDS_PER_ATOM, true);
+                        StringNS::string bl[MAX_BONDS_PER_SOLUTE_ATOM]; int nbl = StringNS::analysis_csv_line(bline, bl, MAX_BONDS_PER_SOLUTE_ATOM, true);
                         for (sas->nbond=0; sas->nbond<nbl; sas->nbond++) sas->ibond[sas->nbond] = atoi(bl[sas->nbond].text);
                     } else if (sl[ipm].length>6&&(sl[ipm].sub(0,6)=="sigma:"||sl[ipm].sub(0,6)=="sigma=")){
                         StringNS::string bline = sl[ipm].sub(6);
@@ -203,17 +203,17 @@ int read_prmtop_ff(IET_Param * sys, char * filename, bool allow = 0){
     sys->default_temperature = 120.27;
     sys->mixingrule_sigma_geometric = false; sys->mixingrule_sigma_geometric_specified = true;
 
-    #define PRMTOP_SECTION_NONE             0
-    #define PRMTOP_SECTION_ATOM_NAME        1
-    #define PRMTOP_SECTION_RESIDUE_LABEL    2
-    #define PRMTOP_SECTION_RESIDUE_POINTER  3
-    #define PRMTOP_SECTION_CHARGE           4
-    #define PRMTOP_SECTION_MASS             5
-    #define PRMTOP_SECTION_LJ_ACOEF         6
-    #define PRMTOP_SECTION_LJ_BCOEF         7
-    #define PRMTOP_SECTION_ATOM_TYPE_INDEX  8
-    #define PRMTOP_SECTION_BONDS_INC_H      9
-    #define PRMTOP_SECTION_BONDS_WITHOUT_H  10
+    const int PRMTOP_SECTION_NONE            = 0;
+    const int PRMTOP_SECTION_ATOM_NAME       = 1;
+    const int PRMTOP_SECTION_RESIDUE_LABEL   = 2;
+    const int PRMTOP_SECTION_RESIDUE_POINTER = 3;
+    const int PRMTOP_SECTION_CHARGE          = 4;
+    const int PRMTOP_SECTION_MASS            = 5;
+    const int PRMTOP_SECTION_LJ_ACOEF        = 6;
+    const int PRMTOP_SECTION_LJ_BCOEF        = 7;
+    const int PRMTOP_SECTION_ATOM_TYPE_INDEX = 8;
+    const int PRMTOP_SECTION_BONDS_INC_H     = 9;
+    const int PRMTOP_SECTION_BONDS_WITHOUT_H = 10;
 
     bool success = true;
     bool allow_compile = allow; int iline = 0;
@@ -349,8 +349,8 @@ int read_prmtop_ff(IET_Param * sys, char * filename, bool allow = 0){
                     if (ibond%3==0){
                         int atom1 = bond_last[0]; int atom2 = bond_last[1];
                         if (atom1>=0 && atom1<sys->nas && atom2>=0 && atom2<sys->nas){
-                            if (sys->as[atom1].nbond<MAX_BONDS_PER_ATOM) sys->as[atom1].ibond[sys->as[atom1].nbond++] = atom2 - atom1;
-                            if (sys->as[atom2].nbond<MAX_BONDS_PER_ATOM) sys->as[atom2].ibond[sys->as[atom2].nbond++] = atom1 - atom2;
+                            if (sys->as[atom1].nbond<MAX_BONDS_PER_SOLUTE_ATOM) sys->as[atom1].ibond[sys->as[atom1].nbond++] = atom2 - atom1;
+                            if (sys->as[atom2].nbond<MAX_BONDS_PER_SOLUTE_ATOM) sys->as[atom2].ibond[sys->as[atom2].nbond++] = atom1 - atom2;
                         }
                     }
                 }
@@ -408,6 +408,20 @@ int read_prmtop_ff(IET_Param * sys, char * filename, bool allow = 0){
 //printf("number of solute atoms: %d\n", sys->nas);
 
     fclose(file); return sys->nas;
+}
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+bool read_top_solute_ff(IET_Param * sys, const char * filename){
+    bool ret;
+    AnalysisTopParameters atp; ListContainer <SoluteAtomSite> as;
+    atp.init();
+    atp.flog = sys->log(); atp.fout = nullptr;
+    atp.debug_level = sys->debug_level;
+    ret = atp.analysis_top(filename, "", 1, &as);
+    sys->as = as.data;
+    sys->nas = as.count;
+    sys->nasmax = as.count_max;
+    atp.dispose();
+    return ret;
 }
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //bool read_solvent_gvv(IET_Param * sys, IET_arrays * arr, char * filename, int nv, int mv)

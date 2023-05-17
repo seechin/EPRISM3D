@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 
                             A brief user guide
-                            EPRISM3D v 1.1.324
+                             EPRISM3D v 1.2.1
 
 -------------------------------------------------------------------------------
 
@@ -49,6 +49,7 @@ of EPRISM3D can be redirected by --prefix):
 
 EPRISM3D_HOME_FOLDER
 ├── bin
+│   ├── episol              A binary with rism3d/top2solute/gensolvent/ts4sdump
 │   ├── eprism3d            The binary to perform 3DRISM and HI calculations
 │   ├── gensolvent          Helps to generate a solvent file
 │   ├── gmxtop2solute       Generate  a solute file from TOP file of GROMACS
@@ -118,13 +119,13 @@ The solvent file needs to be generated manually with the help of gmxtop2solute
 and gensolvent. First, you need to generate a solute file from the TOP file
 of the pure solvent system:
 
-gmxtop2solute -solvent-format -top tip3p.top -ab | grep -v \# > tip3p.raw.txt
+episol top2solute -solvent-format -top tip3p.top -ab |grep -v \# >tip3p.raw.txt
 
 Then edit tip3p.raw.txt manually, change the 4th column of the last line to 2
 so the HW2 and HW1 hydrogens are grouped to one site. Then:
 
-gensolvent -p tip3p.raw.txt -s ../npt/tip3p-npt.gro -f ../npt/tip3p-npt.xtc -ff
-gaff > tip3p.gaff
+episol gensolvent -p tip3p.raw.txt -s ../npt/tip3p-npt.gro -f \
+../npt/tip3p-npt.xtc -ff gaff > tip3p.gaff
 
 Finally, you need to manually add the following line of solvent-solvent
 correlation to the [solvent] section of tip3p.gaff:
@@ -136,39 +137,40 @@ gvv 0.001 gvv.tip3p.1DDRISM.01A.txt
 
 (1) The EPRISM3D is typically performed as:
 
-eprism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
+episol rism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
     solute/methane.pdb -nr 60x60x60 -rc 1 -do closure=hnc rism,step=1000 \
     report:mass,LJ,Coul,V,excess,excessGF
 
 (2) If you want to generate the 3D distributions of density, total correlations
 and direct correlations, then:
 
-eprism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
+episol rism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
     solute/methane.pdb -nr 60x60x60 -rc 1 -do closure=hnc rism,step=1000 \
     save:guv,huv,cuv -o distribution
 
 Then distribution.ts4s will be generated. Then:
 
-ts4sdump distribution.ts4s
+episol ts4sdump distribution.ts4s
 
 The above command shows the file contains three frames. These frames can be
 extracted with the following command::
 
-ts4sdump -e 1 distribution.ts4s
-ts4sdump -e 2 distribution.ts4s
-ts4sdump -e 3 distribution.ts4s
+episol ts4sdump -e 1 distribution.ts4s
+episol ts4sdump -e 2 distribution.ts4s
+episol ts4sdump -e 3 distribution.ts4s
 
 Then you can generate a cut-view image of the 3D distribution:
 
 printf "0 10 0 160\n1 255 255 255\n4 255 0 0\n" > color_map.txt
-ts4sdump -e 1 distribution.ts4s | awk '$3==30{print $0}' > distribution.z_30.txt
+episol ts4sdump -e 1 distribution.ts4s | awk '$3==30{print $0}' > \
+distribution.z_30.txt
 heatmap -color color_map.txt -f distribution.z_30.txt -col 4 -nr 60x60 \
     -size 600x600 -o distribution.z_30.bmp
 convert distribution.z_30.bmp distribution.z_30.png
 
 (3) Compute RDFs:
 
-eprism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
+episol rism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
     solute/methane.pdb -nr 60x60x60 -rc 1 -do closure=hnc rism,step=1000 \
     report@end:rdf save@end:rdf -o methane-water -rdf-bins 50 -rdf-grps \
     1-1,2-1=2,3-tip3p:OW=2,MOL:H3-1=2,5-1=2,1-2
@@ -199,18 +201,18 @@ eprism3d -errtol 1e-7 -allow-original-scf-error
 
 c. The convergence control:
 
-eprism3d -delvv 1 -ndiis 5 -dynamic-delvv 1 ...
-eprism3d -delvv 0.7 -ndiis 5 -dynamic-delvv 0 ...
+episol rism3d -delvv 1 -ndiis 5 -dynamic-delvv 1 ...
+episol rism3d -delvv 0.7 -ndiis 5 -dynamic-delvv 0 ...
 
 d. Specify number of threads and nice level:
 
-eprism3d -nice 19 ...   # change the nice level
-eprism3d -nt 8 ...      # use 8 threads
-eprism3d -np 8 ...      # use 8 fork processes
+episol rism3d -nice 19 ...   # change the nice level
+episol rism3d -nt 8 ...      # use 8 threads
+episol rism3d -np 8 ...      # use 8 fork processes
 
 e. The IDC is simply performed with the IDC-corrected solute file:
 
-eprism3d -p solvent/tip3p-amber14.01A.gaff -s methane-idc.solute ...
+episol rism3d -p solvent/tip3p-amber14.01A.gaff -s methane-idc.solute ...
 
 f. Perform 3DRISM-HI
 
@@ -221,7 +223,7 @@ eprism3d -p solvent/tip3p-amber14.01A.gaff -s solute/methane.solute -f \
 
 g. The cavity detection and removal can be enabled by -cr option:
 
-eprism3d ... -cr ...
+episol rism3d ... -cr ...
 
 h. Perform IET calculations for multiple solutes
 
@@ -230,7 +232,7 @@ formats) and conformations are stored in solutes/ and pdbs/ folders,
 respectively. Then eprism3d will automatically compute for all solute
 molecules:
 
-eprism3d -p solvent/tip3p-amber14.01A.gaff -s solutes -f pdbs -ntb 20 -nt 2 ...
+episol rism3d -p solvent/tip3p-amber14.01A.gaff -s solutes -f pdbs -ntb 20 -nt 2 ...
 
 Here each solute will be computed with 2 threads (-nt 2), and 20 solutes
 (-ntb 20) will be computed simultaneously. This will use totally 40 cores.
@@ -243,5 +245,6 @@ physical memory by using swap memories on hard drives. If you want to use more
 than your physical memories, then you can turn off the memory detection of
 eprism3d:
 
-eprism3d -allow-exceed-ram ...
+episol rism3d -allow-exceed-ram ...
+
 

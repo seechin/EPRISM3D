@@ -1,37 +1,9 @@
-const char * software_name = "gmxtop2solute";
-const char * software_version = "1.2.2.329";
-const char * copyright_string = "(c) 2023 Cao Siqin";
-
-#include    <errno.h>
-#include    <stdio.h>
-#include    <stdlib.h>
-#include    <stdint.h>
-#include    <string.h>
-#include    <math.h>
-#include    <signal.h>
-#include    <fcntl.h>
-#include    <ctype.h>
-#include    <time.h>
-#include    <sys/time.h>
-#include    <sys/types.h>
-#include    <sys/wait.h>
-#include    <sys/stat.h>
-#include    <sys/mman.h>
-#include    <sys/resource.h>
-
-#include    "header.h"
-#include    "main-header.h"
-#include    "String2.cpp"
-
-#include    "Element.h"
-#include    "main-atom-lists.h"
-#include    "read_top.h"
-
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-/*
+//#ifndef __EPRISM_ANALYSIS_TOP__
+//#define __EPRISM_ANALYSIS_TOP__
 class FFAtomType { public:
     char name[MAX_NAME], mole[MAX_NAME]; double mass; double charge; double sigma; double epsilon;
     void init(char * _name, char * _mole, double _mass, double _charge, double _sigma, double _epsilon){ int len = 0;
@@ -101,8 +73,8 @@ class AnalysisTopParameters {
     bool abbreviate_format;     // option --ab
     bool allow_bond;            // option --bond or --no-bond
     int debug_level;
-    int nrecursive;
   private:  // internal variables
+    int nrecursive;
     int on_compile;
     int imolnow, iindex, iimol, iaa_base, iaa_now;
   public:   // outputs
@@ -120,9 +92,20 @@ class AnalysisTopParameters {
             n_excl_grp ++;
         }
     }
-    void init(int argc, char * argv[]){
-        memset(szfn_ffpaths, 0, sizeof(szfn_ffpaths)); nszfn_ffpath = 0;
+    void init(int argc, char * argv[], const char * ffpath_){
+        init(ffpath_);
         software_argc = argc; software_argv = argv;
+    }
+    void init(int argc, char * argv[]){
+        init(nullptr);
+        software_argc = argc; software_argv = argv;
+    }
+    void init(){
+        init(nullptr);
+    }
+    void init(const char * ffpath_){
+        memset(szfn_ffpaths, 0, sizeof(szfn_ffpaths)); nszfn_ffpath = 0;
+        software_argc = 0; software_argv = nullptr;
         memset(excl_grp, 0, sizeof(excl_grp)); n_excl_grp = 0;
         lat.init(); lmt.init(); las.init();
         solvent_format = false;
@@ -137,7 +120,9 @@ class AnalysisTopParameters {
         memset(system_title, 0, sizeof(system_title));
         flog = stderr; fout = stdout;
 
-        char * sz_env_ffgmxt = getenv ((char*)"GMXDATA");
+        const char * sz_env_ffgmxt = ffpath_;
+        if (!sz_env_ffgmxt) sz_env_ffgmxt = getenv ((char*)"GMXDATA");
+
         if (sz_env_ffgmxt){
             memset(szfn_ffpaths, 0, sizeof(szfn_ffpaths));
             strncpy(szfn_ffpaths[0], sz_env_ffgmxt, sizeof(szfn_ffpaths[0]));
@@ -151,7 +136,7 @@ class AnalysisTopParameters {
     }
 
 
-    bool analysis_top(const char * filename, char * last_file_name, int last_line, ListContainer <SoluteAtomSite> * as){
+    bool analysis_top(const char * filename, const char * last_file_name, int last_line, ListContainer <SoluteAtomSite> * as){
         bool success = true;
         bool ret = true; FILE * file = nullptr; int nline = 0; char fn[MAX_PATH];
         StringNS::string sl[__GMXTOP2SOLUTE_MAX_STR]; char input[4096];
@@ -164,8 +149,8 @@ class AnalysisTopParameters {
             if (szfn_ffpaths[i][0]) { strcpy(fn, szfn_ffpaths[i]); strncat(fn, "/", MAX_PATH-1-strlen(fn)); } else fn[0] = 0;
             strncat(fn, filename, MAX_PATH-1-strlen(fn)); file = fopen(fn, "r"); if (file) break;
         }
-        if (!file){ fprintf(stderr, "%s : %s[%d] : cannot open \"%s\"\n", software_name, last_file_name, last_line, filename); return false; }
-        if (debug_level>0) fprintf(stderr, "%s : debug : handling %s\n", software_name, fn);
+        if (!file){ fprintf(flog, "%s : %s[%d] : cannot open \"%s\"\n", software_name, last_file_name, last_line, filename); return false; }
+        if (debug_level>0) fprintf(flog, "%s : debug : reading %s\n", software_name, fn);
 
         while (success && fgets(input, sizeof(input), file)){ nline++;
             for (int i=0; i<sizeof(input) && input[i]; i++) if (input[i] == '\r' || input[i] =='\n') input[i] = 0;
@@ -173,7 +158,7 @@ class AnalysisTopParameters {
             if (sl[0] == "#include" && nw>1){
                 nrecursive ++; //printf("\033[31m%s include file: %s\033[0m\n", fn, sl[1].text);
                 if (nrecursive >= __GMXTOP2SOLUT_MAX_RECURS){
-                    fprintf(stderr, "%s : %s[%d] : recursive overflow when opening \"%s\"\n", software_name, last_file_name, last_line, filename);
+                    fprintf(flog, "%s : %s[%d] : recursive overflow when opening \"%s\"\n", software_name, last_file_name, last_line, filename);
                 } else {
                     ret &= analysis_top(sl[1].text, fn, nline, as);
                 }
@@ -190,7 +175,9 @@ class AnalysisTopParameters {
                         fprintf(fout, "# %s %s\n", software_name, software_version);
                         // fprintf(fout, "%s", szLicence);
                         if (solvent_format) fprintf(fout, "[atom]\n"); else fprintf(fout, "[solute]\n");
-                        fprintf(fout, "#"); for (int i=0; i<software_argc; i++) fprintf(fout, " %s", software_argv[i]); fprintf(fout, "\n");
+                        if (software_argc>0){
+                            fprintf(fout, "#"); for (int i=0; i<software_argc; i++) fprintf(fout, " %s", software_argv[i]); fprintf(fout, "\n");
+                        }
                         if (system_title[0]) fprintf(fout, "# system: %s\n", system_title);
                     }
                 } else if (sl[1] == "system"){ on_compile = 5;
@@ -208,20 +195,20 @@ class AnalysisTopParameters {
                         }
                         int ist = -1;
                         for (int i=0; i<lat.count; i++) if (sl[0].Compare(lat.data[i].name) == 0){ ist = i; break; }
-                        if (debug_level>0 && ist>=0) fprintf(stderr, "%s : warning : redefined FFAtomType %s ignored\n", software_name, sl[0].text);
+                        if (debug_level>0 && ist>=0) fprintf(flog, "%s : warning : redefined FFAtomType %s ignored\n", software_name, sl[0].text);
                         if (ist<0){
                             FFAtomType a; a.init(sl[0].text, (char*)"*", atof(sl[icol_mass].text), atof(sl[icol_charge].text), atof(sl[icol_sigma].text), atof(sl[icol_epsilon].text));
                             lat.insert(&a);
                             //printf("insert: %s -> %s.%s %g %g %g\n", sl[0].text, lat.data[lat.count-1].mole, lat.data[lat.count-1].name, lat.data[lat.count-1].charge, lat.data[lat.count-1].sigma, lat.data[lat.count-1].epsilon);
                         }
                     } else {
-                        fprintf(stderr, "%s : %s[%d] : syntex error in atom type %s\n", software_name, fn, nline, sl[0].text); success = false;
+                        fprintf(flog, "%s : %s[%d] : syntex error in atom type %s\n", software_name, fn, nline, sl[0].text); success = false;
                     }
-                    //if (nat >= natmax){ fprintf(stderr, "%s : error : too many atomtypes (max: %d)\n", software_name, natmax); success = false; }
+                    //if (nat >= natmax){ fprintf(flog, "%s : error : too many atomtypes (max: %d)\n", software_name, natmax); success = false; }
                 } else if (on_compile==2){ // moleculetype
                     imolnow = -1;
                     for (int i=0; i<lmt.count; i++) if (sl[0] == lmt.data[i].name){ imolnow = i; break; }
-                    if (imolnow>=0) fprintf(stderr, "%s : warning : redefied FFMoleType %s ignored\n", software_name, sl[0].text);
+                    if (imolnow>=0) fprintf(flog, "%s : warning : redefied FFMoleType %s ignored\n", software_name, sl[0].text);
                     if (imolnow<0){
                         FFMoleType this_mt; this_mt.init(sl[0].text);
                         lmt.insert(&this_mt);
@@ -229,12 +216,12 @@ class AnalysisTopParameters {
                     imolnow = lmt.count - 1;
                 } else if (on_compile==3){ // atoms
                     if (imolnow<0 || imolnow>=lmt.count){
-                        fprintf(stderr, "%s : warning : ignore atom %s without molecules\n", software_name, sl[0].text);
+                        fprintf(flog, "%s : warning : ignore atom %s without molecules\n", software_name, sl[0].text);
                     } else {
                         //int idef = -1; for (int i=0; i<nat; i++) if (sl[1].Equ(at[i].name)){ idef = i; break; }
                         int idef = -1; for (int i=0; i<lat.count; i++) if (sl[1].Equ(lat.data[i].name)){ idef = i; break; }
                         if (idef<0){
-                            fprintf(stderr, "%s : %s[%d] : error : atom %s not defined\n", software_name, fn, nline, sl[1].text); success = false;
+                            fprintf(flog, "%s : %s[%d] : error : atom %s not defined\n", software_name, fn, nline, sl[1].text); success = false;
                         } else {
                             FFAtomList this_a;
                             this_a.init(atoi(sl[0].text), show_atom_spc_name?sl[4].text:lat.data[idef].name, sl[3].text, lat.data[idef].mass, lat.data[idef].charge, lat.data[idef].sigma, lat.data[idef].epsilon);
@@ -251,11 +238,11 @@ class AnalysisTopParameters {
                 } else if (on_compile==6 ){ // bond
                     for (int i=0; i<nw; i++) if (sl[i][0]=='#' || sl[i][0]==';') nw = i;
                     if (nw<2){
-                        fprintf(stderr, "%s : warning : incomplete bond line \"%s\" ignored\n", software_name, sl[0].text);
+                        fprintf(flog, "%s : warning : incomplete bond line \"%s\" ignored\n", software_name, sl[0].text);
                     } else if (!(StringNS::is_string_number(sl[0]) && StringNS::is_string_number(sl[1]))){
-                        fprintf(stderr, "%s : warning : incorrect bond line \"%s %s\" ignored\n", software_name, sl[0].text, sl[1].text);
+                        fprintf(flog, "%s : warning : incorrect bond line \"%s %s\" ignored\n", software_name, sl[0].text, sl[1].text);
                     } else if (imolnow<0 || imolnow>=lmt.count){
-                        fprintf(stderr, "%s : warning : ignore bond %s-%s without molecules\n", software_name, sl[0].text, sl[1].text);
+                        fprintf(flog, "%s : warning : ignore bond %s-%s without molecules\n", software_name, sl[0].text, sl[1].text);
                     } else {
                         int bondi = atoi(sl[0].text); int bondj = atoi(sl[1].text);
                         FFAtomList * ai = nullptr; FFAtomList * aj = nullptr;
@@ -271,17 +258,17 @@ class AnalysisTopParameters {
                     }
                 } else if (on_compile==4){ // molecules
                     if (is_group_excluded(sl[0])){
-                        fprintf(stderr, "# exclude: %s %d\n", sl[0].text, atoi(sl[1].text));
+                        fprintf(flog, "# exclude: %s %d\n", sl[0].text, atoi(sl[1].text));
                         continue;
                     }
                     if (nw<2){
-                        fprintf(stderr, "%s : %s[%d] : error : incomplete mole line\n", software_name, fn, nline); success = false; continue;
+                        fprintf(flog, "%s : %s[%d] : error : incomplete mole line\n", software_name, fn, nline); success = false; continue;
                     }
 
                   if (true){
                     int imol = -1; for (int i=0; i<lmt.count; i++) if (sl[0] == lmt.data[i].name){ imol = i; break; }
                     if (imol<0){
-                        fprintf(stderr, "%s : %s[%d] : error : molecule %s undefined\n", software_name, fn, nline, sl[0].text); success = false; continue;
+                        fprintf(flog, "%s : %s[%d] : error : molecule %s undefined\n", software_name, fn, nline, sl[0].text); success = false; continue;
                     }
                     int nm = atoi(sl[1].text);
                     if (fout) fprintf(fout, "# molecule: %s\n", lmt.data[imol].name);
@@ -358,147 +345,4 @@ class AnalysisTopParameters {
         fclose(file); return true;
     }
 };
-*/
-
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-const char * szHelp = "\
-  The input/output files:\n\
-    -p, -top              topology file, TOP\n\
-    -ffpath, -include     forcefield folder, multiple separated with \":\"\n\
-    -o                    output file, default: screen\n\
-    -debug                show debug info\n\
-    -excl                 exclude group, default: SOL\n\
-    -use-atom-name        (-an) use atom name, not atom type (default)\n\
-    -use-atom-type        (-at) use atom type, not atom name\n\
-    -solvent-format       (-for-gensolvent) output as solvent format\n\
-    -bond, -no-bond[s]    show/hide bond information, default on\n\
-    -no-index             (-ni) don't output atom and molecule index\n\
-    -abbreviate           (-ab) allow #repeat commands, default off\n\
-    -default              reset all options\n\
-  The output format:\n\
-    mole_name atom_name mass charge sigma epsilon\n\
-";
-
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-int debug_level = 0; bool show_atom_spc_name = true; bool solvent_format = false;
-    bool abbreviate_format = false; bool allow_bond = true; bool allow_index = true;
-char * info_file_name = (char*)"";
-char szfn_ffpath[MAX_PATH];
-char szfn_top[MAX_PATH];
-char szfn_out[MAX_PATH];
-char excl_grps[10][MAX_PATH]; int n_excl_grp = 0;
-int analysis_parameter_line(char * argv[], int * argi, int argc, char * script_name, int script_line){
-    int ret = 0; int i = *argi; bool analysis_script = !script_name? false : (!script_name[0]? false : true);
-    StringNS::string key = argv[i];
-    if (!analysis_script && (key == "-h" || key == "-help" || key == "--h" || key == "--help")){ ret = 2;
-    } else if (!analysis_script && (key == "-version" || key == "--version")){ ret = 3;
-    } else if (key == "-p" || key == "--p" || key == "-top" || key == "--top"){ if (i+1<argc){ i++; strcpy(szfn_top, argv[i]); }
-    } else if (key == "-o" || key == "--o"){ if (i+1<argc){ i++; strcpy(szfn_out, argv[i]); }
-    } else if (key == "-excl"){
-        if (i+1<argc){ i++;
-            if (n_excl_grp<10){
-                strcpy(excl_grps[n_excl_grp], argv[i]);
-                n_excl_grp ++;
-            }
-        }
-    } else if (key == "-debug"){ debug_level = 1;
-    } else if (key=="-ffpath" || key=="--ffpath" || key=="-ffpath" || key=="-include" || key=="--include" || key=="include"){ if (i+1<argc){
-        i++; strcpy(szfn_ffpath,argv[i]); for (int j=0; j<MAX_PATH && szfn_ffpath[j]; j++) if (szfn_ffpath[j]==':') szfn_ffpath[j] = 0;
-      }
-    } else if (key=="-an"||key=="--an"||key=="-use-atom-name"||key=="--use-atom-name"||key=="-use_atom_name"||key=="--use_atom_name"){
-        show_atom_spc_name = true;
-    } else if (key=="-at"||key=="--at"||key=="-use-atom-type"||key=="--use-atom-type"||key=="-use_atom_type"||key=="--use_atom_type"){
-        show_atom_spc_name = false;
-    } else if (key=="-solvent-format"||key=="--solvent-format"||key=="-solvent_format"||key=="--solvent_format"||key=="-for-gensolvent"||key=="--solvent-format"||key=="-for_gensolvent"||key=="--solvent_format"){
-        solvent_format = true;
-    } else if (key=="-ab"||key=="--ab"||key=="-abbreviate"||key=="--abbreviate"){
-        abbreviate_format = true;
-    } else if (key=="-nb"||key=="--nb"||key=="-no-bond"||key=="--no-bond"||key=="-no-bonds"||key=="--no-bonds"){
-        allow_bond = false;
-    } else if (key=="-bond"||key=="--bond"||key=="-bond"){
-        allow_bond = true;
-    } else if (key=="-ni"||key=="--ni"||key=="-no-index"||key=="--no-index"){
-        allow_index = false;
-    } else if (key=="-default"||key=="--default"||key=="-default-format"||key=="--default-format"){
-        show_atom_spc_name = true; solvent_format = false;
-        abbreviate_format = false; allow_bond = false; allow_index = true;
-    } else {
-        strcpy(szfn_top, argv[i]);
-    }
-    *argi = i;
-    return ret;
-}
-int analysis_params(int argc, char * argv[]){
-    bool success = true; int error = 0;
-  // analysis command line params
-    if (argc<2){ printf("%s %s\n", software_name, software_version); return 0; }
-    for (int i=1; i<argc; i++){
-        if (argv[i][0] == '#' || argv[i][0] == ';'){
-        } else {
-            int _error = analysis_parameter_line(argv, &i, argc, (char*)"", i);
-            if (_error){ success = false; error |= _error; }
-        }
-    }
-    if (error == 2){
-        printf("%s %s %s\n", software_name, software_version, copyright_string);
-        printf("%s", szHelp);
-        printf("%s", szLicence);
-        return 0;
-    } else if (error == 3){
-        printf("%s\n", software_version);
-        return 0;
-    }
-    if (!success) return error;
-  // prepare other params
-
-    return 0;
-}
-
-
-
-int main(int argc, char * argv[]){
-    bool success = true; int error = 0; szfn_out[0] = 0;
-    #ifdef DISTRIBUTE_VERSION
-        software_version = DISTRIBUTE_VERSION;
-    #endif
-
-    error = analysis_params(argc, argv); if (error) return error;
-    if (error) success = false;
-
-    FILE * fout = stdout;
-    if (success){
-        if (StringNS::string(szfn_out)=="con" || StringNS::string(szfn_out)=="stdout" || StringNS::string(szfn_out)=="screen"){
-            fout = stdout;
-        } else if (StringNS::string(szfn_out)=="stderr"){
-            fout = stderr;
-        } else if (szfn_out[0]) {
-            fout = fopen(szfn_out, "w");
-            if (!fout){ fprintf(stderr, "%s : error : cannot write to %s\n", software_name, szfn_out); success = false; }
-        }
-    }
-
-    if (success && szfn_top[0]){
-        AnalysisTopParameters atp;
-        if (szfn_ffpath[0]) atp.init(argc, argv, szfn_ffpath); else atp.init(argc, argv);
-        atp.flog = stderr; atp.fout = fout;
-        atp.solvent_format = solvent_format;
-        atp.show_atom_spc_name = show_atom_spc_name;
-        atp.abbreviate_format = abbreviate_format;
-        atp.allow_bond = allow_bond;
-        atp.debug_level = debug_level;
-
-        atp.analysis_top(szfn_top, "", 1, nullptr);
-
-        if (fout && fout!=stdout && fout!=stderr) fclose(fout);
-
-        atp.dispose();
-    }
-    return 0;
-}
+//#endif

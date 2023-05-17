@@ -91,7 +91,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = gensolvent$(EXEEXT) gmxtop2solute$(EXEEXT) \
-	heatmap$(EXEEXT) ts4sdump$(EXEEXT) eprism3d$(EXEEXT)
+	heatmap$(EXEEXT) ts4sdump$(EXEEXT) eprism3d$(EXEEXT) \
+	episol$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -109,10 +110,16 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(solutedir)" "$(DESTDIR)$(solventdir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
+am_episol_OBJECTS = src/episol-episol.$(OBJEXT)
+episol_OBJECTS = $(am_episol_OBJECTS)
+episol_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+episol_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+episol_LINK = $(CXXLD) $(episol_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_eprism3d_OBJECTS = src/eprism3d-eprism3d.$(OBJEXT)
 eprism3d_OBJECTS = $(am_eprism3d_OBJECTS)
 eprism3d_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
 eprism3d_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 eprism3d_LINK = $(CXXLD) $(eprism3d_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -178,7 +185,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/config_aux/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = src/$(DEPDIR)/eprism3d-eprism3d.Po \
+am__depfiles_remade = src/$(DEPDIR)/episol-episol.Po \
+	src/$(DEPDIR)/eprism3d-eprism3d.Po \
 	src/$(DEPDIR)/gensolvent-gensolvent.Po \
 	src/$(DEPDIR)/gmxtop2solute.Po src/$(DEPDIR)/heatmap.Po \
 	src/$(DEPDIR)/ts4sdump.Po
@@ -200,12 +208,12 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(eprism3d_SOURCES) $(gensolvent_SOURCES) \
+SOURCES = $(episol_SOURCES) $(eprism3d_SOURCES) $(gensolvent_SOURCES) \
 	$(gmxtop2solute_SOURCES) $(heatmap_SOURCES) \
 	$(ts4sdump_SOURCES)
-DIST_SOURCES = $(eprism3d_SOURCES) $(gensolvent_SOURCES) \
-	$(gmxtop2solute_SOURCES) $(heatmap_SOURCES) \
-	$(ts4sdump_SOURCES)
+DIST_SOURCES = $(episol_SOURCES) $(eprism3d_SOURCES) \
+	$(gensolvent_SOURCES) $(gmxtop2solute_SOURCES) \
+	$(heatmap_SOURCES) $(ts4sdump_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -357,9 +365,11 @@ gmxtop2solute_SOURCES = src/gmxtop2solute.cpp
 heatmap_SOURCES = src/heatmap.cpp
 ts4sdump_SOURCES = src/ts4sdump.cpp
 eprism3d_SOURCES = src/eprism3d.cpp
+episol_SOURCES = src/episol.cpp
 LDADD = $(EXTRA_LDFLAGS) $(LDFLAGS)
 eprism3d_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
 gensolvent_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
+episol_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
 
 # solvent and solute files in $PREFIX/share/eprism :
 solventdir = ${pkgdatadir}/solvent
@@ -468,6 +478,12 @@ src/$(am__dirstamp):
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/episol-episol.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+
+episol$(EXEEXT): $(episol_OBJECTS) $(episol_DEPENDENCIES) $(EXTRA_episol_DEPENDENCIES) 
+	@rm -f episol$(EXEEXT)
+	$(AM_V_CXXLD)$(episol_LINK) $(episol_OBJECTS) $(episol_LDADD) $(LIBS)
 src/eprism3d-eprism3d.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
@@ -541,6 +557,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/episol-episol.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/eprism3d-eprism3d.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/gensolvent-gensolvent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/gmxtop2solute.Po@am__quote@ # am--include-marker
@@ -568,6 +585,20 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+src/episol-episol.o: src/episol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(episol_CXXFLAGS) $(CXXFLAGS) -MT src/episol-episol.o -MD -MP -MF src/$(DEPDIR)/episol-episol.Tpo -c -o src/episol-episol.o `test -f 'src/episol.cpp' || echo '$(srcdir)/'`src/episol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/episol-episol.Tpo src/$(DEPDIR)/episol-episol.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/episol.cpp' object='src/episol-episol.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(episol_CXXFLAGS) $(CXXFLAGS) -c -o src/episol-episol.o `test -f 'src/episol.cpp' || echo '$(srcdir)/'`src/episol.cpp
+
+src/episol-episol.obj: src/episol.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(episol_CXXFLAGS) $(CXXFLAGS) -MT src/episol-episol.obj -MD -MP -MF src/$(DEPDIR)/episol-episol.Tpo -c -o src/episol-episol.obj `if test -f 'src/episol.cpp'; then $(CYGPATH_W) 'src/episol.cpp'; else $(CYGPATH_W) '$(srcdir)/src/episol.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/episol-episol.Tpo src/$(DEPDIR)/episol-episol.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/episol.cpp' object='src/episol-episol.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(episol_CXXFLAGS) $(CXXFLAGS) -c -o src/episol-episol.obj `if test -f 'src/episol.cpp'; then $(CYGPATH_W) 'src/episol.cpp'; else $(CYGPATH_W) '$(srcdir)/src/episol.cpp'; fi`
 
 src/eprism3d-eprism3d.o: src/eprism3d.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(eprism3d_CXXFLAGS) $(CXXFLAGS) -MT src/eprism3d-eprism3d.o -MD -MP -MF src/$(DEPDIR)/eprism3d-eprism3d.Tpo -c -o src/eprism3d-eprism3d.o `test -f 'src/eprism3d.cpp' || echo '$(srcdir)/'`src/eprism3d.cpp
@@ -909,7 +940,8 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f src/$(DEPDIR)/eprism3d-eprism3d.Po
+		-rm -f src/$(DEPDIR)/episol-episol.Po
+	-rm -f src/$(DEPDIR)/eprism3d-eprism3d.Po
 	-rm -f src/$(DEPDIR)/gensolvent-gensolvent.Po
 	-rm -f src/$(DEPDIR)/gmxtop2solute.Po
 	-rm -f src/$(DEPDIR)/heatmap.Po
@@ -961,7 +993,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f src/$(DEPDIR)/eprism3d-eprism3d.Po
+		-rm -f src/$(DEPDIR)/episol-episol.Po
+	-rm -f src/$(DEPDIR)/eprism3d-eprism3d.Po
 	-rm -f src/$(DEPDIR)/gensolvent-gensolvent.Po
 	-rm -f src/$(DEPDIR)/gmxtop2solute.Po
 	-rm -f src/$(DEPDIR)/heatmap.Po

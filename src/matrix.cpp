@@ -14,20 +14,14 @@ namespace MatrixNS {
 }
 namespace MatrixNS {
     const char * Matrix_edition = "(c) Cao Siqin 2013.10.10";
-    #ifndef MATRIX_DEFAULT_DIM
-        #define MATRIX_DEFAULT_DIM 3
-    #endif
-    #ifndef MIN
-      #define MIN(a,b) (a<b?a:b)
-    #endif
-    #ifndef MAX
-      #define MAX(a,b) (a>b?a:b)
-    #endif
+    const int SIZE_DEFAULT = 400000;
+    const int MATRIX_DEFAULT_DIM = 3;
+    int MIN_int(int a, int b){ return a<b?a:b; }
+    int MAX_int(int a, int b){ return a>b?a:b; }
     class MatrixDataContainer {
       private:
         int ip, savedip;
       public:
-       #define SIZE_DEFAULT 400000
         char * root;
         int size;
         MatrixDataContainer * next;
@@ -59,7 +53,7 @@ namespace MatrixNS {
                 for (int i=ir; i<ip; i++) root[i] = 0;
                 return &root[ir];
             } else {
-                if (!next) enlarge(MAX(size, count));
+                if (!next) enlarge(MAX_int(size, count));
                 return next->allocate(count);
             }
         }
@@ -124,17 +118,17 @@ namespace MatrixNS {
         }
         Matrix operator =(Matrix o){
             if (!m){ memcpy(this, &o, sizeof(Matrix)); init(__c, n); }
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++) *e(i,j) = *o.e(i,j);
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++) *e(i,j) = *o.e(i,j);
             return *this;
         }
       //basic algorithm
         inline double * e(int a, int b){ return &m[a*n+b]; }
         Matrix operator +=(Matrix o){
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++) *e(i,j) += *o.e(i,j);
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++) *e(i,j) += *o.e(i,j);
             return *this;
         }
         Matrix operator -=(Matrix o){
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++) *e(i,j) -= *o.e(i,j);
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++) *e(i,j) -= *o.e(i,j);
             return *this;
         }
         Matrix operator *=(double l){
@@ -147,8 +141,8 @@ namespace MatrixNS {
         }
         Matrix operator +(Matrix o){
             int cip = __c? __c->getip() : 0;
-            Matrix ret(__c, MIN(n,o.n));
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++){
+            Matrix ret(__c, MIN_int(n,o.n));
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++){
                 *ret.e(i,j) = *e(i,j) + *o.e(i,j);
             }
             if (__c) __c->setip(cip);
@@ -156,26 +150,26 @@ namespace MatrixNS {
         }
         Matrix operator -(Matrix o){
             int cip = __c? __c->getip() : 0;
-            Matrix ret(__c, MIN(n,o.n));
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++){
+            Matrix ret(__c, MIN_int(n,o.n));
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++){
                 *ret.e(i,j) = *e(i,j) - *o.e(i,j);
             }
             if (__c) __c->setip(cip);
             return ret;
         }
         Matrix product(Matrix o, Matrix out){
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++){
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++){
                 *out.e(i,j) = 0;
-                for (int k=0; k<MIN(n,o.n); k++) *out.e(i,j) += *e(i,k) * *o.e(k,j);
+                for (int k=0; k<MIN_int(n,o.n); k++) *out.e(i,j) += *e(i,k) * *o.e(k,j);
             }
             return out;
         }
         Matrix operator *(Matrix o){
             int cip = __c? __c->getip() : 0;
-            Matrix ret(__c, MIN(n,o.n));
-            for (int i=0; i<MIN(n,o.n); i++) for (int j=0; j<MIN(n,o.n); j++){
+            Matrix ret(__c, MIN_int(n,o.n));
+            for (int i=0; i<MIN_int(n,o.n); i++) for (int j=0; j<MIN_int(n,o.n); j++){
                 *ret.e(i,j) = 0;
-                for (int k=0; k<MIN(n,o.n); k++) *ret.e(i,j) += *e(i,k) * *o.e(k,j);
+                for (int k=0; k<MIN_int(n,o.n); k++) *ret.e(i,j) += *e(i,k) * *o.e(k,j);
             }
             if (__c) __c->setip(cip);
             return ret;

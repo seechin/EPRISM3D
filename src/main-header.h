@@ -1,39 +1,33 @@
+#ifndef MACHINE_REASONABLE_ERROR
+
 #define __REAL__  double
 #define MACHINE_REASONABLE_ERROR 1e-12
 
 //#define     _TTYPROMPTCOLOR_
 //#define     _FUNCTION_EXPORT_
 
-#define PI  3.1415926535897932384626433832795
-#define EE  2.7182818284590452353602874713527
-#define COULCOOEF 138.9354846
 
-#ifndef MAX_SOL
-    #define MAX_SOL             100     // Max atom site number
-#endif
-#ifndef MAX_CMD_PARAMS
-    #define MAX_CMD_PARAMS      MAX_SOL // Max parameter number for a command
-#endif
-#ifndef MAX_THREADS
-    #define MAX_THREADS         500     // Max number of forks or threads
-#endif
-#ifndef MAX_DIIS
-    #define MAX_DIIS            100     // Max DIIS steps
-#endif
-#define MAX_INCLUDE_RECURSIVE   100     // maximum include recursive levels
+const double PI = 3.1415926535897932384626433832795;
+const double EE = 2.7182818284590452353602874713527;
+const double COULCOOEF = 138.9354846;
 
+const int MAX_SOL = 100;                // Max atom site number
+const int MAX_CMD_PARAMS = MAX_SOL;     // Max parameter number for a command
+const int MAX_THREADS = 500;            // Max number of forks or threads
+const int MAX_DIIS = 100;               // Max parameter number for a command
+const int MAX_INCLUDE_RECURSIVE = 100;  // maximum include recursive levels
 
-#define MAX_PATH                1024    // Maximum length of filename/path strings
-#define MAX_NAME                64      // Maximum length of molecule/atom names
-#define MAX_WORD                1000    // Maximum number of words in line analysis
+const int MAX_PATH = 1024;              // Maximum length of filename/path strings
+const int MAX_NAME = 64;                // Maximum length of molecule/atom names
+const int MAX_WORD = 1000;              // Maximum number of words in line analysis
 
-#define MAX_RENAME_COUNT        10000   // Maximum number of renames
-#define MAX_GVV_FILES           3
+const int MAX_RENAME_COUNT = 10000;     // Maximum number of renames
+const int MAX_GVV_FILES = 3;
 
 #ifdef PACKAGE_VERSION
   #define DISTRIBUTE_VERSION    PACKAGE_VERSION
 #else
-  #define DISTRIBUTE_VERSION    "1.1.325"
+  #define DISTRIBUTE_VERSION    "1.2.2"
 #endif
 #ifndef DISTRIBUTE_VERSION
     const char * szLicence = "";
@@ -43,4 +37,6 @@
  # terms of the GNU Lesser General Public License v3:\n\
  # https://www.gnu.org/licenses/lgpl-3.0.en.html\n\
 ";
+#endif
+
 #endif

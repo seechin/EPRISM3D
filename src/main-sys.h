@@ -31,9 +31,8 @@ class IET_command {
 //------------------   System Param: The system wide parameters -------------------
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
+const int MAX_IET_SYS_DEBYE_TERMS = 6;
 class IET_Param {
-  #define MAX_DEBYE_TERMS     6
-  #define MP_TASK_PARAMS      5
  // Fixed parameters
   public:   // task params
     FILE * flog; bool is_log_tty; int argc; char ** argv;
@@ -52,7 +51,7 @@ class IET_Param {
       bool dielect_from_dipole, dipole_from_dielect;
       double ld_kernel_expand;
     int esal; bool perform_pme;
-      double debye_rate[MAX_SOL]; int n_debye_rate; double debye_kappa[MAX_DEBYE_TERMS];
+      double debye_rate[MAX_SOL]; int n_debye_rate; double debye_kappa[MAX_IET_SYS_DEBYE_TERMS];
     bool cavity_removal_correction; double cavity_removal_factor; double cavity_removal_ucutoff; double cavity_removal_size_factor;
     double temperature, default_temperature;
     double scale_lj, scale_coul, scale_hs;
@@ -171,7 +170,7 @@ class IET_Param {
           dielect_from_dipole = dipole_from_dielect = false;
           ld_kernel_expand = 1;
         esal = CoulAL_Coulomb; perform_pme = true;
-            for (int i=0; i<MAX_SOL; i++) debye_rate[i] = 0; n_debye_rate = MAX_SOL; for (int i=0; i<MAX_DEBYE_TERMS; i++) debye_kappa[i] = 0;
+            for (int i=0; i<MAX_SOL; i++) debye_rate[i] = 0; n_debye_rate = MAX_SOL; for (int i=0; i<MAX_IET_SYS_DEBYE_TERMS; i++) debye_kappa[i] = 0;
         cavity_removal_correction = false; cavity_removal_factor = 1; cavity_removal_ucutoff = 100; cavity_removal_size_factor = 1.5;
         gvv_specification = 0; gvv_is_left_aligned = true; xvv_k_shift = 0; xvv_extend = 0; xvv_scheme = "so"; xvv_scale = nullptr; n_xvv_scale = 0;
         temperature = 298; default_temperature = 120.27;

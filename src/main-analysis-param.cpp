@@ -10,8 +10,7 @@ const char * szHelp1 = "\
   Basic options:\n\
     -p, -solvent            iet parameter file, can be screen/con\n\
     $IETLIB (env string)    the folder containing iet parameter files\n\
-    -s, -solute             solute file (solute file, prmtop file, or a folder)\n\
-                            batch mode enabled when both -s and -f are folders\n\
+    -s, -solute             solute file (solute/top/prmtop, or a folder)\n\
 ";
 #ifdef _GROMACS_
   const char * szHelpXTC = "\
@@ -111,6 +110,7 @@ const char * szHelpAdvanced = "\
     -Yukawa/YukawaFFT       = -Coulomb YukawaFFT\n\
   Advanced settings: (all optional)\n\
     [#]include filename     (in -p file) include another file\n\
+    -s folder -f folder     batch mode enabled when both -s and -f are folders\n\
     -debug-level 3          additional debug, requires additional time\n\
     -[no-]debug-crc         calculate & display CRC32 of important data blocks\n\
     -[no-]debug-xvv         display some elements of wvv & nhkvv\n\
@@ -1778,7 +1778,7 @@ int analysis_params_post(IET_Param * sys){
             fprintf(sys->log(), "%s : error : %d Debye decay rates required, but only %d given\n", software_name, sys->n_debye_rate, sys->nvm); return false;
         }*/
         if (sys->n_debye_rate > sys->nvm) sys->n_debye_rate = sys->nvm;
-        for (int i=0; i<MAX_DEBYE_TERMS; i++) sys->debye_kappa[i] = 0;
+        for (int i=0; i<MAX_IET_SYS_DEBYE_TERMS; i++) sys->debye_kappa[i] = 0;
         for (int ivm=0; ivm<sys->n_debye_rate; ivm++)/* if (sys->debye_rate[ivm] <= 0)*/{
             const char * mole = ""; for (int i=0; i<sys->nv; i++) if (sys->av[i].iaa==ivm) mole = sys->av[i].mole;
             double beta = sys->default_temperature / sys->temperature;
@@ -1808,7 +1808,7 @@ int analysis_params_post(IET_Param * sys){
             //if (mole[0]) fprintf(sys->log(), "%s : debye_rate[%s] = %g <-- dielectric %g\n", software_name, mole, sys->debye_rate[ivm], sys->dielect_mol[ivm]); else fprintf(sys->log(), "%s : debye_rate[%d] = %g <-- dielectric %g\n", software_name, ivm+1, sys->debye_rate[ivm], sys->dielect_mol[ivm]);
 //fprintf(sys->log(), "debye_rate[%d] = %f\n", ivm, sys->debye_rate[ivm]);
         }
-        double debye_kappa_1 = sys->debye_kappa[1]; for (int i=0; i<MAX_DEBYE_TERMS; i++) sys->debye_kappa[i] = debye_kappa_1<MACHINE_REASONABLE_ERROR? 0 : sys->debye_kappa[i]/debye_kappa_1;
+        double debye_kappa_1 = sys->debye_kappa[1]; for (int i=0; i<MAX_IET_SYS_DEBYE_TERMS; i++) sys->debye_kappa[i] = debye_kappa_1<MACHINE_REASONABLE_ERROR? 0 : sys->debye_kappa[i]/debye_kappa_1;
         //if (sys->debug_level>=1/* && sys->esal==CoulAL_Yukawa*/) fprintf(sys->log(), "%s : system debye expansion: %g %g %g %g %g\n", software_name, sys->debye_kappa[1], sys->debye_kappa[2], sys->debye_kappa[3], sys->debye_kappa[4], sys->debye_kappa[5]);
 
         if (sys->esal==CoulAL_YukawaFFT){

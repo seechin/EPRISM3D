@@ -1,15 +1,10 @@
 const char * software_name = "gensolvent";
-const char * software_version = "0.320.2640";
+const char * software_version = "1.2.1.328";
 const char * copyright_string = "(c) 2022 Cao Siqin";
-
-#define     __REAL__    double
 
 #include    "header.h"
 #if defined(_GROMACS4_) || defined(_GROMACS5_) || defined(_GROMACS2016_) || defined(_GROMACS2018_)
   #define _GROMACS_
-#endif
-#ifndef     MAX_SOL
-    #define     MAX_SOL     100     // Max atom site number
 #endif
 #include    <errno.h>
 #include    <stdio.h>
@@ -35,8 +30,8 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #include    "main-header.h"
-#define MAX_ITER_TIMES  20
-#define MAX_ITEMS       50
+const int MAX_ITER_TIMES = 20;
+const int MAX_ITEMS      = 50;
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const char * szHelp = "\
     -p                  forcefield file starts with [atom]\n\

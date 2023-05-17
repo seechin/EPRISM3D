@@ -1,3 +1,5 @@
+//#define HAVE_PTHREAD_H
+//#define HAVE_ZLIB_H
 #include "../config.h"
 
 // Linux libraries

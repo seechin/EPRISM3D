@@ -8,7 +8,7 @@
 // version : 2011.01.12 : basic functions
 //StringX ============================================
 #ifndef nullptr
-    #define nullptr 0
+    #define nullptr NULL
 #endif
 
 #ifndef __StringNS__

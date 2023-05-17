@@ -4,8 +4,8 @@
 // =============================================================================
 // =============================================================================
 
+const int MAX_IET_ARRAY_CACHE_COUNT = 4;
 class IET_arrays {
-  #define MAX_CACHE_COUNT 4
   public:  // grid size
     int nv, nvm; int nz, ny, nx; int n_gvv, n_wvv, n_nhkvv, n_xvv, n_zeta; double drrism, drhi;
   public:  // grid scale vectors
@@ -50,7 +50,7 @@ class IET_arrays {
     HIEquationSolver solver_hi;
     DIISNS::DIIS diis_hi;
   public:  // RISM&HI cache
-    __REAL__ **** rismhi_cache[MAX_CACHE_COUNT]; size_t n_extra_rismhi_cache[MAX_CACHE_COUNT];
+    __REAL__ **** rismhi_cache[MAX_IET_ARRAY_CACHE_COUNT]; size_t n_extra_rismhi_cache[MAX_IET_ARRAY_CACHE_COUNT];
         // rismhi_cache[0~1] are reserved, should never be reused
         //   rismhi_cache[0] = res
         //   rismhi_cache[1] = huv and ddpot
@@ -96,7 +96,7 @@ class IET_arrays {
             if (ulr) clear_tensor4d(ulr, N4);
             if (hlr) clear_tensor4d(hlr, N4);
             if (clr) clear_tensor4d(clr, N4);
-            for (int i=0; i<MAX_CACHE_COUNT; i++) if (rismhi_cache[i]) clear_tensor4d(rismhi_cache[i], N4);
+            for (int i=0; i<MAX_IET_ARRAY_CACHE_COUNT; i++) if (rismhi_cache[i]) clear_tensor4d(rismhi_cache[i], N4);
         }
       // clear RISM cache
         istep = 0;
@@ -164,7 +164,7 @@ class IET_arrays {
         return pointer;
     }
     __REAL__ **** submit_cache(IET_Param * sys, int cache_id){
-        if (cache_id<0 || cache_id>=MAX_CACHE_COUNT) exit_on_pointer_overflow();
+        if (cache_id<0 || cache_id>=MAX_IET_ARRAY_CACHE_COUNT) exit_on_pointer_overflow();
         if (!rismhi_cache[cache_id]) submit_ram_N4(sys, rismhi_cache[cache_id]);
         return rismhi_cache[cache_id];
     }
@@ -198,9 +198,9 @@ class IET_arrays {
         __dd = debug_trace_init4d(sys, "dd", init_tensor4d(nvm+1, nz, ny, nx, 0)); dd = nullptr;
         phi = init_tensor4d(nvm, nz, ny, nx, 0);
         nphi = debug_trace_init4d(sys, "nphi", init_tensor4d(nvm, nz, ny, nx, 0));
-        for (int i=0; i<MAX_CACHE_COUNT; i++) n_extra_rismhi_cache[i] = 0;
+        for (int i=0; i<MAX_IET_ARRAY_CACHE_COUNT; i++) n_extra_rismhi_cache[i] = 0;
           n_extra_rismhi_cache[2] += (((size_t)nv)*nx*ny*nz / sys->compress_page_size + 1) * sys->compress_page_size * sizeof(unsigned int);;
-          for (int i=0; i<MAX_CACHE_COUNT; i++) rismhi_cache[i] = debug_trace_init4d(sys, "cache", init_tensor4d(nv, nz, ny, nx, n_extra_rismhi_cache[i]));
+          for (int i=0; i<MAX_IET_ARRAY_CACHE_COUNT; i++) rismhi_cache[i] = debug_trace_init4d(sys, "cache", init_tensor4d(nv, nz, ny, nx, n_extra_rismhi_cache[i]));
           compress_buffer = &rismhi_cache[2][0][0][0][0]; compress_buffer_size = sizeof(__REAL__)*nx*ny*nz*nv + n_extra_rismhi_cache[2];
           res = rismhi_cache[0]; ddpot_hi = huv = rismhi_cache[1];
         for (int i=0; i<nvm; i++) theta[i] = debug_trace_init3d(sys, "theta", init_tensor3d<__REAL__>(nz, ny, nx, 0));

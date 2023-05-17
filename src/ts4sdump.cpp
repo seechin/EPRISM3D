@@ -1,10 +1,6 @@
 const char * software_name = "ts4sdump";
-const char * software_version = "0.320.2640";
+const char * software_version = "1.2.1.328";
 const char * copyright_string = "(c) 2022 Cao Siqin";
-
-#define     __REAL__    double
-#define     MACHINE_REASONABLE_ERROR    1e-12
-#define _TTYPROMPTCOLOR_
 
 #include    "header.h"
 #include    "main-header.h"
@@ -31,10 +27,6 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
     #include  <zlib.h>
 #endif
 
-#define PI  3.1415926535897932384626433832795
-#define EE  2.7182818284590452353602874713527
-#define COULCOOEF 138.9354846
-
 #include    "String2.cpp"
 #include    "crc32_zlib.h"
 #include    "common.cpp"
@@ -57,16 +49,16 @@ const char * szHelp ="\
       by frame content: title@time\n\
 ";
 
-#define WORK_LIST_N_FRAMES      1
-#define WORK_LIST_HEADERS_L     2
-#define WORK_LIST_HEADERS       3
-#define WORK_LIST_DIM           4
-#define WORK_CHECK_DATA         5
-#define WORK_EXTRACT_DATA       6
-#define WORK_EXTRACT_EDATA      7
-#define WORK_EXTRACT_EDATA_BY_X 701
-#define WORK_EXTRACT_EDATA_BY_Y 702
-#define WORK_EXTRACT_EDATA_BY_Z 703
+const int WORK_LIST_N_FRAMES       = 1;
+const int WORK_LIST_HEADERS_L      = 2;
+const int WORK_LIST_HEADERS        = 3;
+const int WORK_LIST_DIM            = 4;
+const int WORK_CHECK_DATA          = 5;
+const int WORK_EXTRACT_DATA        = 6;
+const int WORK_EXTRACT_EDATA       = 7;
+const int WORK_EXTRACT_EDATA_BY_X  = 701;
+const int WORK_EXTRACT_EDATA_BY_Y  = 702;
+const int WORK_EXTRACT_EDATA_BY_Z  = 703;
 
 
 void print_uncompress_page_error(FILE * fout, int uret, int nframe){

@@ -173,7 +173,7 @@ bool is_a_text_file(char * filename){
 //------------------   Memory Management for Multi Processing   -------------------
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
-#define MAX_MEMORYS 65536
+const int MAX_MEMORYS = 65536;
 int _memory_blk_total = 0; size_t _memory_total = 0; size_t _memory_last_allocated = 0; bool _ignore_memory_capacity = false;
 void * _memory_pointers[MAX_MEMORYS]; size_t _memory_size[MAX_MEMORYS];
 size_t get_total_physical_memory(){
@@ -303,7 +303,7 @@ double lap_display_timers(FILE * fp, bool display=true){
 
     if (display){
         fprintf(fp, "Computational time:\n");
-        #define DISPLAY_TIMECOST_CRI 0.01
+        const double DISPLAY_TIMECOST_CRI = 0.01;
         if (__timer[1]>DISPLAY_TIMECOST_CRI) fprintf(fp, "  read param        %12s s, %s\n", display_time(__timer[1], buf), print_percentage_value(vbuf, sizeof(vbuf), __timer[1]/__total_timer));
         if (__timer[2]>DISPLAY_TIMECOST_CRI) fprintf(fp, "  memory management %12s s, %s\n", display_time(__timer[2], buf), print_percentage_value(vbuf, sizeof(vbuf), __timer[2]/__total_timer));
         if (__timer[3]>DISPLAY_TIMECOST_CRI) fprintf(fp, "  input/output      %12s s, %s\n", display_time(__timer[3], buf), print_percentage_value(vbuf, sizeof(vbuf), __timer[3]/__total_timer));

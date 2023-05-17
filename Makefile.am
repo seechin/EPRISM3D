@@ -1,6 +1,6 @@
 # executables in $PREFIX/bin :
 
-bin_PROGRAMS = gensolvent gmxtop2solute heatmap ts4sdump eprism3d
+bin_PROGRAMS = gensolvent gmxtop2solute heatmap ts4sdump eprism3d episol
 dist_bin_SCRIPTS = src/generate-idc.sh
 
 gensolvent_SOURCES = src/gensolvent.cpp
@@ -8,10 +8,12 @@ gmxtop2solute_SOURCES = src/gmxtop2solute.cpp
 heatmap_SOURCES = src/heatmap.cpp
 ts4sdump_SOURCES = src/ts4sdump.cpp
 eprism3d_SOURCES = src/eprism3d.cpp
+episol_SOURCES = src/episol.cpp
 
 LDADD = $(EXTRA_LDFLAGS) $(LDFLAGS)
 eprism3d_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
 gensolvent_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
+episol_CXXFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
 
 # solvent and solute files in $PREFIX/share/eprism :
 
