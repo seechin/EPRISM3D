@@ -86,13 +86,13 @@ int main(int argc, char * argv[]){
     if (argc<=1 || key=="-h" || key=="-help" || key=="--help"){
         printf("%s %s %s\n", software_name, software_version, copyright_string);
         printf("%s\n", szHelp);
-    } else if (key=="top2solute" || key=="gmxtop2solute"){
+    } else if (key=="gmxtop2solute" || key=="top2solute" || key=="top"){
         return GMXTOP2SOLUTE::main(argc-1, &argv[1]);
-    } else if (key=="gensolvent"){
+    } else if (key=="gensolvent" || key=="gv"){
         return GENSOLVENT::main(argc-1, &argv[1]);
-    } else if (key=="rism3d" || key=="eprism3d" || key=="rismhi3d"){
+    } else if (key=="eprism3d" || key=="rism3d" || key=="rismhi3d" || key=="3d"){
         return EPRISM3D::main(argc-1, &argv[1]);
-    } else if (key=="" || key=="ts4sdump"){
+    } else if (key=="ts4sdump" || key=="ts4s" || key=="ts"){
         return TS4SDUMP::main(argc-1, &argv[1]);
     } else {
         fprintf(stderr, "%s : error : unrecognizable executive: \"%s\"\n", software_name, argv[1]); success = false;

@@ -72,11 +72,13 @@ class AnalysisTopParameters {
     bool show_atom_spc_name;    // option --use-atom-name
     bool abbreviate_format;     // option --ab
     bool allow_bond;            // option --bond or --no-bond
+    bool reindex_residues;      // option --reindex-residues
     int debug_level;
   private:  // internal variables
     int nrecursive;
     int on_compile;
     int imolnow, iindex, iimol, iaa_base, iaa_now;
+    int iaa_reindex, last_top_iaa;
   public:   // outputs
     char system_title[MAX_PATH];
     FILE * flog; FILE * fout;
@@ -112,10 +114,12 @@ class AnalysisTopParameters {
         show_atom_spc_name = true;
         abbreviate_format = false;
         allow_bond = true;
+        reindex_residues = true;
         debug_level = 0;
         nrecursive = 0;
 
         on_compile = 0; imolnow = 0; iindex = 0; iimol = 0; iaa_base = -1; iaa_now = 0;
+        iaa_reindex = 0; last_top_iaa = -1;
 
         memset(system_title, 0, sizeof(system_title));
         flog = stderr; fout = stdout;
@@ -278,10 +282,19 @@ class AnalysisTopParameters {
                     if (abbreviate_format){ count_display = 1; count_abbreviate = nm-1; }
 
                     for (int ec=0; ec<count_display; ec++){
+                        last_top_iaa = -1;
                         for (FFAtomList * p = lmt.data[imol].ar; p; p=p->next){
-                            ++iindex; n_atom_in_mol ++;
-                            if (iaa_base<0) iaa_base = 0; else if (p->iaa+iaa_base < iaa_now) iaa_base = iaa_now;
-                            iaa_now = p->iaa + iaa_base; if (n_aa_in_mol<p->iaa) n_aa_in_mol = p->iaa;
+                            ++iindex;
+                            if (reindex_residues){
+                                if (p->iaa != last_top_iaa){
+                                    last_top_iaa = p->iaa; iaa_reindex ++;
+                                }
+                                iaa_now = iaa_reindex;
+                            } else {
+                                n_atom_in_mol ++;
+                                if (iaa_base<0) iaa_base = 0;
+                                iaa_now = p->iaa + iaa_base; if (n_aa_in_mol<p->iaa) n_aa_in_mol = p->iaa;
+                            }
                           // save atom
                             if (as){
                                 SoluteAtomSite this_sas; memset(&this_sas, 0, sizeof(this_sas));

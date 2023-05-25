@@ -953,21 +953,6 @@ bool read_solvent_zeta(IET_Param * sys, IET_arrays * arr, char * fnzeta, int nvm
 }
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// other advanced process for post handling of inputs
-void debug_show_rism_xvv_matrix(IET_Param * sys, IET_arrays * arr, int nv, int nvm){
-  // display xvv mean value in debug mode
-    fprintf(sys->log(), "DEBUG:: wvv[,][0] = \n");
-    for (int iv=0; iv<nv; iv++){ fprintf(sys->log(), "  "); for (int jv=0; jv<nv; jv++) fprintf(sys->log(), " %10.4g", arr->wvv[iv][jv][0]); fprintf(sys->log(), "\n"); }
-    fprintf(sys->log(), "DEBUG:: nhkvv[,][0] = \n");
-    for (int iv=0; iv<nv; iv++){ fprintf(sys->log(), "  "); for (int jv=0; jv<nv; jv++) fprintf(sys->log(), " %10.4g", arr->nhkvv[iv][jv][0]); fprintf(sys->log(), "\n"); }
-    fprintf(sys->log(), "DEBUG:: xvv[,][0] = \n");
-    for (int iv=0; iv<nv; iv++){ fprintf(sys->log(), "  "); for (int jv=0; jv<nv; jv++) fprintf(sys->log(), " %10.4g", arr->wvv[iv][jv][0] + arr->nhkvv[iv][jv][0]); fprintf(sys->log(), "\n"); }
-    if (arr->zeta){
-        fprintf(sys->log(), "DEBUG:: zetavv[,][0] = \n");
-        for (int iv=0; iv<nvm; iv++){ fprintf(sys->log(), "  "); for (int jv=0; jv<nvm; jv++) fprintf(sys->log(), " %10.4g", arr->zeta[iv][jv][0]); fprintf(sys->log(), "\n"); }
-    }
-}
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 bool calculate_lse_ab_automatically(IET_Param * sys, IET_arrays * arr){
   #ifdef _EXPERIMENTAL_

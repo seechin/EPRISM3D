@@ -535,19 +535,23 @@ namespace RISMHI3D_RISMNS {
     //>>>>>>>                                  >>>>>>>>>>>>>>>>>>>>
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     void prepare_3d_rism(IET_Param * sys, IET_arrays * arr){
-      // long range total correlation: arr->hlr = (β U_{CoulLR+SR} q / εr) ρv * χvv
-        size_t N3 = arr->nx * arr->ny * arr->nz; size_t N4 = N3 * sys->nv;
-        double beta = sys->default_temperature / sys->temperature;
-      // 1. arr->clr = clr = - ulr
-        for (size_t i4=0; i4<N4; i4++) arr->clr[0][0][0][i4] = - arr->ulr[0][0][0][i4];
-      // 2. arr->hlr = clr ρv * χvv
-        __REAL__ *** xvv = arr->xvv;
-        __REAL__ *** wvv = arr->wvv;
-        __REAL__ *** nhkvv = arr->nhkvv;
-        if (sys->hlr_no_hi){
-            perform_rism_equation_without_hi(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
+      // prepare for the short-long range separation
+        if (sys->ietal==IETAL_SSOZ){
         } else {
-            perform_rism_equation(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
+          // long range total correlation: arr->hlr = (β U_{CoulLR+SR} q / εr) ρv * χvv
+            size_t N3 = arr->nx * arr->ny * arr->nz; size_t N4 = N3 * sys->nv;
+            double beta = sys->default_temperature / sys->temperature;
+          // 1. arr->clr = clr = - ulr
+            for (size_t i4=0; i4<N4; i4++) arr->clr[0][0][0][i4] = - arr->ulr[0][0][0][i4];
+          // 2. arr->hlr = clr ρv * χvv
+            __REAL__ *** xvv = arr->xvv;
+            __REAL__ *** wvv = arr->wvv;
+            __REAL__ *** nhkvv = arr->nhkvv;
+            if (sys->hlr_no_hi){
+                perform_rism_equation_without_hi(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
+            } else {
+                perform_rism_equation(sys, arr, arr->clr, arr->hlr, arr->res, wvv, nhkvv, xvv);
+            }
         }
     }
 
@@ -649,9 +653,7 @@ namespace RISMHI3D_RISMNS {
         }
 
       // step 1: other preparations
-        if (sys->ietal==IETAL_RRISM){
-            prepare_3d_rism(sys, arr);
-        }
+        prepare_3d_rism(sys, arr);
       // step 2: RISM loop
         //size_t flog_pointer = 0;
         for (int istep=0; istep<sys->stepmax_rism; istep++){

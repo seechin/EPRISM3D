@@ -45,7 +45,7 @@ class IET_arrays {
     DIISNS::DIIS diis_rism;
   public:  // HI related
     __REAL__ **** phi, **** nphi;
-    __REAL__ *** theta[MAX_SOL];
+    __REAL__ **** theta;
     __REAL__ **** dd, **** __dd;   // 3D dimensionless density
     HIEquationSolver solver_hi;
     DIISNS::DIIS diis_hi;
@@ -108,7 +108,7 @@ class IET_arrays {
         if (clear_h_c){
             if (phi) clear_tensor4d(phi, N4m);
             if (nphi) clear_tensor4d(nphi, N4m);
-            for (int i=0; i<MAX_SOL; i++) if (theta[i]) clear_tensor3d(theta[i], N3);
+            if (theta) clear_tensor4d(theta, N4m);
             if (dd) clear_tensor4d(dd, N4m);
             diis_hi.ndiis = 0;
         }
@@ -203,7 +203,7 @@ class IET_arrays {
           for (int i=0; i<MAX_IET_ARRAY_CACHE_COUNT; i++) rismhi_cache[i] = debug_trace_init4d(sys, "cache", init_tensor4d(nv, nz, ny, nx, n_extra_rismhi_cache[i]));
           compress_buffer = &rismhi_cache[2][0][0][0][0]; compress_buffer_size = sizeof(__REAL__)*nx*ny*nz*nv + n_extra_rismhi_cache[2];
           res = rismhi_cache[0]; ddpot_hi = huv = rismhi_cache[1];
-        for (int i=0; i<nvm; i++) theta[i] = debug_trace_init3d(sys, "theta", init_tensor3d<__REAL__>(nz, ny, nx, 0));
+        theta = debug_trace_init4d(sys, "theta", init_tensor4d(nvm, nz, ny, nx, 0));
         fftin = debug_trace_init3d(sys, "fftin", init_tensor3d<__REAL__>(nz, ny, nx, 0));
         fftout = debug_trace_init3d(sys, "fftout", init_tensor3d<__REAL__>(nz, ny, nx, 0));
 

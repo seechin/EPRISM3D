@@ -1,15 +1,12 @@
-# 1.2.2
+# 1.2.1 - 1.2.3
 
-May 16, 2023
+May 15-25, 2023
 
-Now episol and eprism3d can directly read top files, no need to translate with gmxtop2solute.
+Add episol to call eprism3d/gmxtop2solute/gensolvent/ts4sdump
 
+episol and eprism3d can directly read top files, no need to translate with gmxtop2solute
 
-# 1.2.1
-
-May 15, 2023
-
-add: episol to call rism3d/top2solute/gensolvent/ts4sdump
+Fixed a bug of residue number counting in eprism3d
 
 
 # 1.1.322 - 1.1.326

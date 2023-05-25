@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "1.2.2.329";
+const char * software_version = "1.2.3.330";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -49,7 +49,7 @@ const char * copyright_string = "(c) 2022 Cao Siqin";
 
     const char * color_string_of_echo    = "\33[7m"; //"\33[0;30;47m"
     const char * color_string_of_warning = "\33[0;30;103m"; // "\33[38;5;232;48;5;226m"; // "\33[0;44;38;5;228m";
-    const char * color_string_of_error   = "\33[0;93;41m"; // "\33[0;41;38;5;228m"; //"\33[0;31;48;5;226m"
+    const char * color_string_of_error   = "\33[0;37;1;41m"; // "\33[0;41;38;5;228m"; //"\33[0;31;48;5;226m"
     const char * color_string_end        = "\33[0m";
 
     const char * color_string_of_synerr  = color_string_of_error;
@@ -291,7 +291,6 @@ const int IETCMD_v_PMV          = 252;
 const int IETCMD_v_Ef1          = 253;
 const int IETCMD_v_excess_GF    = 261;
 const int IETCMD_v_excess_RISM  = 262;
-const int IETCMD_v_excess_hyb   = 263;
 // test commands
 const int IETCMD_v_Yukawa       = 3001;
 const int IETCMD_v_LocalCoulomb = 3002;
@@ -613,7 +612,6 @@ bool main_initialization(int argc, char * argv[], IET_Param ** _sys, IET_arrays 
         if (sys->debug_level>=2) fprintf(sys->log(), "Debug:: generate_xvv_from_wvv_and_nhkvv()\n");
         generate_xvv_from_wvv_and_nhkvv(sys, arr);
     }
-    if (success && (sys->mode_test || sys->debug_level>=3) && arr->wvv && arr->nhkvv) debug_show_rism_xvv_matrix(sys, arr, sys->nv, sys->nvm);
     if (success){
         if (arr->wvv) arr->convolution_wvv = arr->wvv;
         if (arr->nhkvv){

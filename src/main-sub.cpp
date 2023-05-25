@@ -80,7 +80,6 @@ const char * get_variable_name(int var){
         case -IETCMD_v_clr:         return "chlr";
         case IETCMD_v_excess_GF:    return "exGF";
         case IETCMD_v_excess_RISM:  return "excess";
-        case IETCMD_v_excess_hyb:   return "exHyb";
         default: return "(unknown)";
     }
 }
@@ -573,7 +572,6 @@ const char * get_report_title(int print_item){
         case -IETCMD_v_clr:         return "chlr";
         case IETCMD_v_excess_GF:    return "exGF";
         case IETCMD_v_excess_RISM:  return "excess";
-        case IETCMD_v_excess_hyb:   return "exHyb";
     }
     return "";
 }
@@ -590,7 +588,6 @@ double get_report_value(IET_Report * report, int print_item){
         case IETCMD_v_Ef1:          return report->Uef1;
         case IETCMD_v_excess_GF:    return report->excess_chem[0];
         case IETCMD_v_excess_RISM:  return report->excess_chem[1];
-        case IETCMD_v_excess_hyb:   return report->excess_chem[2];
     }
     return 0;
 }
@@ -822,13 +819,12 @@ bool main_prepair_rdf_grps_to_pairs(IET_Param * sys, IET_arrays * arr, RDF_data 
     return success;
 }
 void main_print_solute_list(IET_Param * sys, IET_arrays * arr, FILE * flog, const char * prefix){
-    int max_display_solute_num = 10;
-    //if (sys->detail_level>=2 && sys->debug_level>=2) max_display_solute_num = 99999999;
+    int max_display_solute_num = 10; if (sys->detail_level>=3) max_display_solute_num = -1;
     fprintf(flog, "%ssolutes: %d atoms in %s: ", prefix, sys->nas, get_short_fn(szfn_xtc));
       int iaa_count = 0;
-      for (int i=0; i<sys->nas; i++) if (i==0||StringNS::string(sys->as[i].mole)!=sys->as[i-1].mole){
+      for (int i=0; i<sys->nas; i++) if (i==0||sys->as[i].iaa!=sys->as[i-1].iaa){
           iaa_count++;
-          if (iaa_count<max_display_solute_num) fprintf(flog, i==0?"%s":", %s", sys->as[i].mole);
+          if (max_display_solute_num<=0 || iaa_count<max_display_solute_num) fprintf(flog, i==0?"%s":", %s", sys->as[i].mole);
           else if (iaa_count==max_display_solute_num) fprintf(flog, " ...");
       };
     if (iaa_count>=max_display_solute_num)fprintf(flog, " (%d residues)", iaa_count); fprintf(flog, "\n");

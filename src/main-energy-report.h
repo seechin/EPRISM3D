@@ -12,7 +12,7 @@ class IET_Report {
     double lj, coulsr, coullr, entropy, N, N0, dN, Ng, dNg;
     double Uef0, Uef1; // electric field energy
   // free energy
-    double excess_chem[3];  // [0]: GF, [1]: RISM, [2]: hybrid
+    double excess_chem[2];  // [0]: GF, [1]: RISM
   public:
     void operator += (IET_Report & o){
       // basic energies

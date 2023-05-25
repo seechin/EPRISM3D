@@ -107,7 +107,7 @@ void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total,
         __REAL__ * clr1 = &arr->clr[iv][0][0][0];
         double nbulk = sys->nbulk[sys->av[iv].iaa];
         sites[iv].N0 = arr->box.x * arr->box.y * arr->box.z * sys->density_av[iv];
-        double factor = sys->closure_factors[iv]; double rhob = 0; int n_rhob = 0;
+        double rhob = 0; int n_rhob = 0;
         for (size_t i3=0; i3<N3; i3++){
             double g = (1+huv1[i3]) * (dd1? dd1[i3]/nbulk : 1);
             double h = g - 1;
@@ -124,9 +124,9 @@ void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total,
             double excessive_RISM = calculate_excessive_chemical_potential(sys->closures[iv], sys->closure_factors[iv], sys->ccutoff, uuv1[i3], huv1[i3], hlr1[i3], cuv1[i3], clr1[i3]) * (dd1?dd1[i3]:1) * dN * sys->av[iv].multi / beta;
             sites[iv].excess_chem[0] += excessive_GF;
             sites[iv].excess_chem[1] += excessive_RISM;
-            double excessive_GF_LR = (- (0.5*huv1[i3] + 1) * clr1[i3]) * dN * sys->av[iv].multi * (dd1?dd1[i3]/nbulk : 1) / beta;
-            double excessive_RISM_SR = calculate_excessive_chemical_potential(sys->closures[iv], sys->closure_factors[iv], sys->ccutoff, uuv1[i3], huv1[i3], hlr1[i3], cuv1[i3], 0) * (dd1?dd1[i3]:1) * dN * sys->av[iv].multi / beta;
-            sites[iv].excess_chem[2] += excessive_RISM_SR + excessive_GF_LR;
+            //double excessive_GF_LR = (- (0.5*huv1[i3] + 1) * clr1[i3]) * dN * sys->av[iv].multi * (dd1?dd1[i3]/nbulk : 1) / beta;
+            //double excessive_RISM_SR = calculate_excessive_chemical_potential(sys->closures[iv], sys->closure_factors[iv], sys->ccutoff, uuv1[i3], huv1[i3], hlr1[i3], cuv1[i3], 0) * (dd1?dd1[i3]:1) * dN * sys->av[iv].multi / beta;
+            //sites[iv].excess_chem[2] += excessive_RISM_SR + excessive_GF_LR;
         }
         sites[iv].dN = sites[iv].N - sites[iv].N0;
         sites[iv].dNg = sites[iv].Ng - sites[iv].N0;
