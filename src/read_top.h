@@ -70,7 +70,6 @@ class AnalysisTopParameters {
   public:   // options
     bool solvent_format;        // option --solvent-format : prepare for gensolvent
     bool show_atom_spc_name;    // option --use-atom-name
-    bool abbreviate_format;     // option --ab
     bool allow_bond;            // option --bond or --no-bond
     bool reindex_residues;      // option --reindex-residues
     int debug_level;
@@ -112,7 +111,6 @@ class AnalysisTopParameters {
         lat.init(); lmt.init(); las.init();
         solvent_format = false;
         show_atom_spc_name = true;
-        abbreviate_format = false;
         allow_bond = true;
         reindex_residues = true;
         debug_level = 0;
@@ -278,21 +276,16 @@ class AnalysisTopParameters {
                     if (fout) fprintf(fout, "# molecule: %s\n", lmt.data[imol].name);
                     int n_atom_in_mol = 0; int n_aa_in_mol = 0;
 
-                    int count_display = nm; int count_abbreviate = 0;
-                    if (abbreviate_format){ count_display = 1; count_abbreviate = nm-1; }
-
-                    for (int ec=0; ec<count_display; ec++){
+                    for (int ec=0; ec<nm; ec++){
                         last_top_iaa = -1;
                         for (FFAtomList * p = lmt.data[imol].ar; p; p=p->next){
-                            ++iindex;
+                            ++iindex; n_atom_in_mol ++; if (iaa_base<0) iaa_base = 0;
                             if (reindex_residues){
                                 if (p->iaa != last_top_iaa){
-                                    last_top_iaa = p->iaa; iaa_reindex ++;
+                                    last_top_iaa = p->iaa; iaa_reindex ++; n_aa_in_mol ++;
                                 }
                                 iaa_now = iaa_reindex;
                             } else {
-                                n_atom_in_mol ++;
-                                if (iaa_base<0) iaa_base = 0;
                                 iaa_now = p->iaa + iaa_base; if (n_aa_in_mol<p->iaa) n_aa_in_mol = p->iaa;
                             }
                           // save atom
@@ -320,27 +313,6 @@ class AnalysisTopParameters {
                             }
                         }
                         iaa_base += n_aa_in_mol;
-                    }
-                    if (count_abbreviate>0){
-                      // save atom
-                        if (as){
-                            for (int im=0; im<count_abbreviate; im++){
-                                int last_iaa_before_repeat = as->data[as->count-1].iaa;
-                                for (int ima=0; ima<n_atom_in_mol; ima++){
-                                    int isrc = as->count - n_atom_in_mol; if (isrc<0) isrc = 0; if (isrc>=as->count) isrc = as->count-1;
-                                    SoluteAtomSite this_sas = as->data[isrc];
-                                    ++iindex; this_sas.index = iindex;
-                                    this_sas.iaa = iaa_base + n_aa_in_mol - (last_iaa_before_repeat - this_sas.iaa);
-                                    as->insert(&this_sas);
-                                }
-                                iaa_base += n_aa_in_mol;
-                            }
-                        } else {
-                            iaa_base += count_abbreviate;
-                            iindex += n_atom_in_mol*(count_abbreviate);
-                        }
-                      // print atom
-                        if (fout) fprintf(fout, "#repeat %d atoms %d times\n", n_atom_in_mol, count_abbreviate);
                     }
 
                     iimol+=nm;

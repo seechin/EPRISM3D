@@ -410,13 +410,13 @@ int read_prmtop_ff(IET_Param * sys, char * filename, bool allow = 0){
     fclose(file); return sys->nas;
 }
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-bool read_top_solute_ff(IET_Param * sys, const char * filename){
+bool read_top_solute_ff(IET_Param * sys, const char * filename, int i_arg_fn){
     bool ret;
     AnalysisTopParameters atp; ListContainer <SoluteAtomSite> as;
     atp.init();
     atp.flog = sys->log(); atp.fout = nullptr;
     atp.debug_level = sys->debug_level;
-    ret = atp.analysis_top(filename, "", 1, &as);
+    ret = atp.analysis_top(filename, "arg", i_arg_fn, &as);
     sys->as = as.data;
     sys->nas = as.count;
     sys->nasmax = as.count_max;

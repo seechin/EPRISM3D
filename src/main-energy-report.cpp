@@ -98,7 +98,7 @@ void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total,
 
   // step 2. site dependent terms
     for (int iv=0; iv<sys->nv; iv++){
-        int ivm = sys->av[iv].iaa; double q = sys->av[iv].charge_esp / dielect; double dN = dV * sys->density_av[iv] / sys->nbulk_rism[sys->av[iv].iaa];
+        int ivm = sys->av[iv].iaa; double q = sys->av[iv].charge_esp / dielect; double dN = dV * sys->density_av[iv];
         __REAL__ * uuv1 = &arr->uuv[iv][0][0][0];
         __REAL__ * huv1 = &arr->huv[iv][0][0][0];
         __REAL__ * hlr1 = &arr->hlr[iv][0][0][0];
@@ -114,7 +114,7 @@ void generate_report_data(IET_Param * sys, IET_arrays * arr, IET_Report & total,
             double dn = g * dN * sys->av[iv].multi;
           // potential energy terms
             sites[iv].N += g * dN;
-            if (dn>MACHINE_REASONABLE_ERROR) sites[iv].Ng += dN * sys->nbulk_rism[sys->av[iv].iaa];
+            if (dn>MACHINE_REASONABLE_ERROR) sites[iv].Ng += dN;
             sites[iv].lj += arr->ulj[iv][0][0][i3] * dn * scale_lj;
             sites[iv].coulsr += (arr->ucoulsr[0][0][i3]) * q * dn * scale_coul;
             sites[iv].coullr += (arr->ucoullr[0][0][i3]) * q * dn * scale_coul;

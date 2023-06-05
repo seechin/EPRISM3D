@@ -1,3 +1,12 @@
+# 1.2.4 - 1.2.5
+
+May 26 - June 5, 2023
+
+Fixed a bug in gmxtop2solute to generate incorrect residue numbers
+
+Allow to compile with GROMACS 2016~2018 when $CFLAGS, $CPPFLAGS and $LDFLAGS are defined
+
+
 # 1.2.1 - 1.2.3
 
 May 15-25, 2023

@@ -715,7 +715,7 @@ int analysis_parameter_line(IET_Param * sys, char * argv[], int * argi, int argc
    // The input/output control parameters ---------------------------------------------
    // ---------------------------------------------------------------------------------
     } else if (key == "-s" || key == "--s" || key == "-solute" || key == "--solute" || key == "solute"){
-        if (i+1<argc && (argv[i+1][0]!='-'||(i+2<argc&&StringNS::string(argv[i+1])=="--"))){ if (i+2<argc&&StringNS::string(argv[i+1])=="--") i++; i++; if (!cp_file_with_path(szfn_solute, argv[i], script_path)){ fprintf(sys->log(), "%s : %s[%d] : cannot open -s %s%s%s\n", software_name, get_second_fn(script_name), script_line, istty?prompt_path_prefix:"", argv[i], istty?prompt_path_suffix:""); ret = 1; }; }
+        if (i+1<argc && (argv[i+1][0]!='-'||(i+2<argc&&StringNS::string(argv[i+1])=="--"))){ if (i+2<argc&&StringNS::string(argv[i+1])=="--") i++; i++; i_szfn_solute = i; if (!cp_file_with_path(szfn_solute, argv[i], script_path)){ fprintf(sys->log(), "%s : %s[%d] : cannot open -s %s%s%s\n", software_name, get_second_fn(script_name), script_line, istty?prompt_path_prefix:"", argv[i], istty?prompt_path_suffix:""); ret = 1; }; }
     } else if (key == "-b" || key == "--b"){ if (i+1<argc && StringNS::is_string_number(argv[i+1])) sys->time_begin = atof(argv[++i]);
     } else if (key == "-e" || key == "--e"){ if (i+1<argc && StringNS::is_string_number(argv[i+1])) sys->time_end = atof(argv[++i]);
     } else if (key == "-dt" || key == "--dt"){ if (i+1<argc && StringNS::is_string_number(argv[i+1])) sys->time_step = atof(argv[++i]);
@@ -1746,7 +1746,6 @@ int analysis_params_post(IET_Param * sys){
         double total_nbulk = 0;
         for (int i=0; i<sys->nvm; i++){
             sys->nbulk[i] = sys->density_mv[i] / sys->bulk_density_mv[i];
-            sys->nbulk_rism[i] = 1;
             total_nbulk += sys->nbulk[i];
         }
         for (int i=0; i<sys->nvm; i++) sys->nbulk[i] /= total_nbulk;

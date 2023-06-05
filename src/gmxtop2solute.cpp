@@ -1,5 +1,5 @@
 const char * software_name = "gmxtop2solute";
-const char * software_version = "1.2.3.330";
+const char * software_version = "1.2.4.331";
 const char * copyright_string = "(c) 2023 Cao Siqin";
 
 #include    <errno.h>
@@ -44,7 +44,6 @@ const char * szHelp = "\
     -bond, -no-bond[s]    show/hide bond information, default on\n\
     -original-ri          (-ri) use the residue numbers in the top file\n\
     -reindex-residue[s]   (-rr) reindex residue numbers (default)\n\
-    -abbreviate           (-ab) allow #repeat commands, default off\n\
     -default              reset all options\n\
   The output format:\n\
     mole_name atom_name mass charge sigma epsilon\n\
@@ -56,10 +55,10 @@ const char * szHelp = "\
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 int debug_level = 0; bool show_atom_spc_name = true; bool reindex_residues = true; bool solvent_format = false;
-    bool abbreviate_format = false; bool allow_bond = true; bool allow_index = true;
+    bool allow_bond = true; bool allow_index = true;
 char * info_file_name = (char*)"";
 char szfn_ffpath[MAX_PATH];
-char szfn_top[MAX_PATH];
+char szfn_top[MAX_PATH]; int i_param_szfn_top = -1;
 char szfn_out[MAX_PATH];
 char excl_grps[10][MAX_PATH]; int n_excl_grp = 0;
 int analysis_parameter_line(char * argv[], int * argi, int argc, char * script_name, int script_line){
@@ -67,7 +66,7 @@ int analysis_parameter_line(char * argv[], int * argi, int argc, char * script_n
     StringNS::string key = argv[i];
     if (!analysis_script && (key == "-h" || key == "-help" || key == "--h" || key == "--help")){ ret = 2;
     } else if (!analysis_script && (key == "-version" || key == "--version")){ ret = 3;
-    } else if (key == "-p" || key == "--p" || key == "-top" || key == "--top"){ if (i+1<argc){ i++; strcpy(szfn_top, argv[i]); }
+    } else if (key == "-p" || key == "--p" || key == "-top" || key == "--top"){ if (i+1<argc){ i++; strcpy(szfn_top, argv[i]); i_param_szfn_top = i; }
     } else if (key == "-o" || key == "--o"){ if (i+1<argc){ i++; strcpy(szfn_out, argv[i]); }
     } else if (key == "-excl"){
         if (i+1<argc){ i++;
@@ -90,8 +89,6 @@ int analysis_parameter_line(char * argv[], int * argi, int argc, char * script_n
         reindex_residues = false;
     } else if (key=="-solvent-format"||key=="--solvent-format"||key=="-solvent_format"||key=="--solvent_format"||key=="-for-gensolvent"||key=="--solvent-format"||key=="-for_gensolvent"||key=="--solvent_format"){
         solvent_format = true;
-    } else if (key=="-ab"||key=="--ab"||key=="-abbreviate"||key=="--abbreviate"){
-        abbreviate_format = true;
     } else if (key=="-nb"||key=="--nb"||key=="-no-bond"||key=="--no-bond"||key=="-no-bonds"||key=="--no-bonds"){
         allow_bond = false;
     } else if (key=="-bond"||key=="--bond"||key=="-bond"){
@@ -100,8 +97,9 @@ int analysis_parameter_line(char * argv[], int * argi, int argc, char * script_n
         allow_index = false;
     } else if (key=="-default"||key=="--default"||key=="-default-format"||key=="--default-format"){
         show_atom_spc_name = true; solvent_format = false;
-        abbreviate_format = false; allow_bond = false; allow_index = true;
+        allow_bond = false; allow_index = true;
     } else {
+        i_param_szfn_top = i;
         strcpy(szfn_top, argv[i]);
     }
     *argi = i;
@@ -122,10 +120,8 @@ int analysis_params(int argc, char * argv[]){
         printf("%s %s %s\n", software_name, software_version, copyright_string);
         printf("%s", szHelp);
         printf("%s", szLicence);
-        return 0;
     } else if (error == 3){
         printf("%s\n", software_version);
-        return 0;
     }
     if (!success) return error;
   // prepare other params
@@ -163,11 +159,10 @@ int main(int argc, char * argv[]){
         atp.solvent_format = solvent_format;
         atp.reindex_residues = reindex_residues;
         atp.show_atom_spc_name = show_atom_spc_name;
-        atp.abbreviate_format = abbreviate_format;
         atp.allow_bond = allow_bond;
         atp.debug_level = debug_level;
 
-        atp.analysis_top(szfn_top, "", 1, nullptr);
+        atp.analysis_top(szfn_top, "arg", i_param_szfn_top, nullptr);
 
         if (fout && fout!=stdout && fout!=stderr) fclose(fout);
 

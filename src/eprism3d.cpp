@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "1.2.3.330";
+const char * software_version = "1.2.5.331";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -302,7 +302,7 @@ char szfn_path[MAX_PATH];
 char hostname[MAX_PATH], username[MAX_PATH];
 // input file
 char szfn_xtc[MAX_PATH];
-char szfn_solute[MAX_PATH];
+char szfn_solute[MAX_PATH]; int i_szfn_solute = -1;
 char szfn_gvvs[MAX_GVV_FILES*MAX_PATH]; int n_szfn_gvvs = 0;
 char szfn_zeta[MAX_PATH];
 // log file
@@ -503,7 +503,7 @@ bool main_initialization(int argc, char * argv[], IET_Param ** _sys, IET_arrays 
         if (file_extension(szfn_solute) == "prmtop"){
             if (read_prmtop_ff(sys, szfn_solute) <= 0){ success = false; if (_error) *_error = error; if (_syntax_error) *_syntax_error = true; return false; }
         } else if (file_extension(szfn_solute) == "top"){
-            success = read_top_solute_ff(sys, szfn_solute);
+            success = read_top_solute_ff(sys, szfn_solute, i_szfn_solute);
         } else {
             //if (file_extension(szfn_solute) == "top") fprintf(flog, "%s : solute file %s may need to be converted with gmxtop2solute\n", software_name, get_second_fn(szfn_solute));
             if (read_solute_ff(sys, szfn_solute) <= 0){ success = false; if (_error) *_error = error; if (_syntax_error) *_syntax_error = true; return false; }

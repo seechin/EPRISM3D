@@ -27,7 +27,7 @@ const int MAX_GVV_FILES = 3;
 #ifdef PACKAGE_VERSION
   #define DISTRIBUTE_VERSION    PACKAGE_VERSION
 #else
-  #define DISTRIBUTE_VERSION    "1.2.3"
+  #define DISTRIBUTE_VERSION    "1.2.5"
 #endif
 #ifndef DISTRIBUTE_VERSION
     const char * szLicence = "";

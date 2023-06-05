@@ -87,7 +87,6 @@ class IET_Param {
     double llambda[MAX_SOL]; int nllambda; // ln\lambda is the integral constants
     double lse_a, lse_b; int calc_ab_automatically, calc_nbulk_automatically;
     double nbulk[MAX_SOL]; int nnbulk; // atomised mole fraction
-        double nbulk_rism[MAX_SOL];
     #ifdef _EXPERIMENTAL_
       IET_Param_Exp ex; // experimental features
     #endif
@@ -200,7 +199,6 @@ class IET_Param {
         for (int i=0; i<MAX_SOL; i++) zeta_scaling_factor[i] = 1; n_zeta_scaling_factor = 0;
         for (int i=0; i<MAX_SOL; i++) degree_of_freedom[i] = 3; n_degree_of_freedom = 0;
         for (int i=0; i<MAX_SOL; i++) llambda[i] = 0; nllambda = 0; nbulk[0] = 1; nnbulk = 0;
-        for (int i=0; i<MAX_SOL; i++) nbulk_rism[0] = 1;
         lse_a = 0.3; lse_b = 54; calc_ab_automatically = 2; calc_nbulk_automatically = false;
         #ifdef _EXPERIMENTAL_
             ex.init();

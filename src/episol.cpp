@@ -1,5 +1,5 @@
 const char * software_name = "episol";
-const char * software_version = "1.2.2.329";
+const char * software_version = "1.2.4.331";
 const char * copyright_string = "(c) 2023 Cao Siqin";
 
 #include    "header.h"
@@ -61,8 +61,8 @@ namespace TS4SDUMP {
 
 const char * szHelp = "\
   Sub commands:\n\
-    rism3d                perform the 3D-RISM calculations\n\
-    top2solute            translate GROMACS TOP file to solute file\n\
+    eprism3d              perform the 3D-RISM calculations\n\
+    gmxtop2solute         translate GROMACS TOP file to solute file\n\
     gensolvent            generate the intital solvent file\n\
     ts4sdump              dump the data of a TS4S file (.ts4s) to text\
 ";

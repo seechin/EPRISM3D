@@ -118,10 +118,10 @@
             int     na;
             #if defined(_GROMACS4_) || defined(_GROMACS5_)
               int   step;
-            #elif defined(_GROMACS2016_) || defined(_GROMACS2018_)
-              long long step;
+            //#elif defined(_GROMACS2016_) || defined(_GROMACS2018_)
+            //  long long step;
             #else
-              long long step;
+              gmx_int64_t step;
             #endif
             matrix  box;
             rvec    *x;

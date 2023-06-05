@@ -1,12 +1,3 @@
-double inline rism_h_from_cch(double c_plus_ch, double nbulk_rism){
-    return c_plus_ch * nbulk_rism + (nbulk_rism-1);
-    //return c_plus_ch + (nbulk_rism-1);
-}
-double inline rism_cch_from_h(double h, double nbulk_rism){
-    return (h+1) / nbulk_rism - 1;
-    //return h - (nbulk_rism-1);
-}
-
 namespace RISMHI3D_RISMNS {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //>>>>>>>                             >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -30,7 +21,6 @@ namespace RISMHI3D_RISMNS {
             double factor = sys->closure_factors[iv];
             double cutoff = sys->ccutoff;
             double t = 0;
-            double nbulk_rism = sys->nbulk_rism[sys->av[iv].iaa]; double h_nbulk_rism = nbulk_rism - 1;
             int closure = sys->closures[iv];
             //if (i3begin<0) i3begin=0; if (i3end>N3) i3end = N3;
             if (i3end>N3) i3end = N3;
@@ -39,24 +29,22 @@ namespace RISMHI3D_RISMNS {
                 for (size_t i3=i3begin; i3<i3end; i3++) res[i3] = 0;
             } else if (closure==CLOSURE_HNC){   // HNC, can be scaled with -cf
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = factor*(hhere - cuv[i3]);
-                    t = exp(-uuv[i3] + t) * nbulk_rism - 1;
+
+                    t = factor*(huv[i3] - cuv[i3]);
+                    t = exp(-uuv[i3] + t) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PLHNC){
                 double expC = exp(factor);
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + (hhere - cuv[i3]);
-                    t = (t>factor? t+expC-factor : exp(t)) * nbulk_rism - 1;
+                    t = -uuv[i3] + (huv[i3] - cuv[i3]);
+                    t = (t>factor? t+expC-factor : exp(t)) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_HARDSPHERE){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
                     t = uuv[i3]>cutoff? uuv[i3] : 0;
-                    t = exp(-t + (hhere - cuv[i3]))*nbulk_rism - 1;
+                    t = exp(-t + (huv[i3] - cuv[i3])) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_MSA){
@@ -77,114 +65,103 @@ namespace RISMHI3D_RISMNS {
                 }
             } else if (closure==CLOSURE_KH){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + (hhere - cuv[i3]);
-                    t = t>0? t + h_nbulk_rism : exp(t)*nbulk_rism - 1;
+                    t = -uuv[i3] + (huv[i3] - cuv[i3]);
+                    t = t>0? t : exp(t) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE2){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + h_nbulk_rism;
+                        t = t + t*t/2;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE3){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE4){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE5){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE6){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE7){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE8){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE9){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320 + t*t*t*t*t*t*t*t*t/362880 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320 + t*t*t*t*t*t*t*t*t/362880;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE10){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){
-                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320 + t*t*t*t*t*t*t*t*t/362880 + t*t*t*t*t*t*t*t*t*t/3628800 + h_nbulk_rism;
+                        t = t + t*t/2 + t*t*t/6 + t*t*t*t/24 + t*t*t*t*t/120 + t*t*t*t*t*t/720 + t*t*t*t*t*t*t/5040 + t*t*t*t*t*t*t*t/40320 + t*t*t*t*t*t*t*t*t/362880 + t*t*t*t*t*t*t*t*t*t/3628800;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PSE){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
                     if (t>0){ double s = t;
                         t += ((factor-1)>1?1:(factor-1)<0?0:(factor-1)) * s*s/2;
                         t += ((factor-2)>1?1:(factor-2)<0?0:(factor-2)) * s*s*s/6;
@@ -195,140 +172,124 @@ namespace RISMHI3D_RISMNS {
                         t += ((factor-7)>1?1:(factor-7)<0?0:(factor-7)) * s*s*s*s*s*s*s*s/40320;
                         t += ((factor-8)>1?1:(factor-8)<0?0:(factor-8)) * s*s*s*s*s*s*s*s*s/362880;
                         t += ((factor-9)>1?1:(factor-9)<0?0:(factor-9)) * s*s*s*s*s*s*s*s*s*s/3628800;
-                        t += h_nbulk_rism;
                     } else {
-                        t = exp(t)*nbulk_rism - 1;
+                        t = exp(t) - 1;
                     }
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_PY){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = exp(-uuv[i3])*(1 + hhere - cuv[i3])*nbulk_rism - 1;
+
+                    t = exp(-uuv[i3])*(1 + huv[i3] - cuv[i3]) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_HNCB){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
+
+                    t = huv[i3] - cuv[i3];
                     double hh = extra? extra[i3] : 0;
-                    t = exp(-uuv[i3] + t - hh*hh/2)*nbulk_rism - 1;
+                    t = exp(-uuv[i3] + t - hh*hh/2) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_D2){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3] + t - t*t/2)*nbulk_rism - 1;
+
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3] + t - t*t/2) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_MS){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3] + sqrt((1+2*t)>0?(1+2*t):0)-1)*nbulk_rism - 1;
+
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3] + sqrt((1+2*t)>0?(1+2*t):0)-1) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_MSHNC){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
+
+                    t = huv[i3] - cuv[i3];
                     if (t<=0){
-                        t = exp(-uuv[i3] + t)*nbulk_rism - 1;
+                        t = exp(-uuv[i3] + t) - 1;
                         res[i3] = t - huv[i3]; huv[i3] = t;
                     } else {
-                        t = exp(-uuv[i3] + sqrt(1+2*t)-1)*nbulk_rism - 1;
+                        t = exp(-uuv[i3] + sqrt(1+2*t)-1) - 1;
                         res[i3] = t - huv[i3]; huv[i3] = t;
                     }
                 }
             } else if (closure==CLOSURE_BPGG){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3] + pow((1+factor*t)>0?(1+factor*t):0, 1.0/factor)-1)*nbulk_rism - 1;
+
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3] + pow((1+factor*t)>0?(1+factor*t):0, 1.0/factor)-1) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_BPGGHNC){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
+
+                    t = huv[i3] - cuv[i3];
                     if (t<=0){
-                        t = exp(-uuv[i3] + t)*nbulk_rism - 1;
+                        t = exp(-uuv[i3] + t) - 1;
                         res[i3] = t - huv[i3]; huv[i3] = t;
                     } else {
-                        t = exp(-uuv[i3] + pow(1+factor*t, 1.0/factor)-1)*nbulk_rism - 1;
+                        t = exp(-uuv[i3] + pow(1+factor*t, 1.0/factor)-1) - 1;
                         res[i3] = t - huv[i3]; huv[i3] = t;
                     }
                 }
             } else if (closure==CLOSURE_VM){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3] + t - t*t/2/(1+factor*t))*nbulk_rism - 1;
+
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3] + t - t*t/2/(1+factor*t)) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_MHNC){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
+
+                    t = huv[i3] - cuv[i3];
                     double E_mhnc = - t*t/(2 + 2*0.8*t);
-                    t = exp(-uuv[i3] + t + E_mhnc)*nbulk_rism - 1;
+                    t = exp(-uuv[i3] + t + E_mhnc) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_MP){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3])*((1+factor)*exp(t/(1+factor)) - factor)*nbulk_rism - 1;
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3])*((1+factor)*exp(t/(1+factor)) - factor) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
-
-
             } else if (closure==CLOSURE_RBC_HNC){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = hhere - cuv[i3];
-                    t = exp(-uuv[i3] + factor*t) * nbulk_rism * (extra? extra[i3] : 1) - 1;
+                    t = huv[i3] - cuv[i3];
+                    t = exp(-uuv[i3] + factor*t) * (extra? extra[i3] : 1) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_RBC_KH){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = -uuv[i3] + hhere - cuv[i3];
-                    t = (t>0? t+1 +ln(extra?fabs(extra[i3]+MACHINE_REASONABLE_ERROR):1) : exp(t)*(extra?extra[i3]:1))*nbulk_rism - 1;
+                    t = -uuv[i3] + huv[i3] - cuv[i3];
+                    t = (t>0? t+1 +ln(extra?fabs(extra[i3]+MACHINE_REASONABLE_ERROR):1) : exp(t)*(extra?extra[i3]:1)) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_USER1){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = exp(-uuv[i3] + hhere - cuv[i3])*nbulk_rism - 1;
+                    t = exp(-uuv[i3] + huv[i3] - cuv[i3]) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_USER2){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = exp(-uuv[i3] + hhere - cuv[i3])*nbulk_rism - 1;
+                    t = exp(-uuv[i3] + huv[i3] - cuv[i3]) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else if (closure==CLOSURE_USER3){
                 for (size_t i3=i3begin; i3<i3end; i3++){
-                    double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                    t = exp(-uuv[i3] + hhere - cuv[i3])*nbulk_rism - 1;
+                    t = exp(-uuv[i3] + huv[i3] - cuv[i3]) - 1;
                     res[i3] = t - huv[i3]; huv[i3] = t;
                 }
             } else { // default: HNC (no scaling) or experimental
-              #ifdef _EXPERIMENTAL_
-                if (!experimental_closure(closure, uuv, ulr, huv, hlr, cuv, clr, dd, res, i3begin, i3end, factor, cutoff, nbulk_rism)){
-              #endif
-                  for (size_t i3=i3begin; i3<i3end; i3++){
-                      double hhere = rism_cch_from_h(huv[i3], nbulk_rism);
-                      t = (hhere - cuv[i3]);
-                      t = exp(-uuv[i3] + t) * nbulk_rism - 1;
-                      res[i3] = t - huv[i3]; huv[i3] = t;
-                  }
-              #ifdef _EXPERIMENTAL_
+                for (size_t i3=i3begin; i3<i3end; i3++){
+                    t = (huv[i3] - cuv[i3]);
+                    t = exp(-uuv[i3] + t) - 1;
+                    res[i3] = t - huv[i3]; huv[i3] = t;
                 }
-              #endif
             }
 
             for (size_t i3=i3begin; i3<i3end; i3++) ret += res[i3]*res[i3];
@@ -519,7 +480,7 @@ namespace RISMHI3D_RISMNS {
         for (int iv=0; iv<sys->nv; iv++){
             for (size_t i3=0; i3<N3; i3++){
               // note: enable_dilute_rism only perform on closure, so here huv is similar to disable_dilute_rism
-                arr->huv[iv][0][0][i3] = rism_h_from_cch(arr->huv[iv][0][0][i3] + arr->hlr[iv][0][0][i3], sys->nbulk_rism[sys->av[iv].iaa]);
+                arr->huv[iv][0][0][i3] = arr->huv[iv][0][0][i3] + arr->hlr[iv][0][0][i3];
             }
         }
       // 3. sr closure

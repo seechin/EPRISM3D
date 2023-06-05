@@ -407,8 +407,7 @@ void calculate_rdf(IET_Param * sys, IET_arrays * arr, RDF_data * rdf, double r_m
             __REAL__ * huv1 = &arr->huv[iv][0][0][0];
             __REAL__ * dd1 = arr->dd? &arr->dd[sys->av[iv].iaa][0][0][0] : nullptr;
             double nbulk = sys->nbulk[sys->av[iv].iaa];
-            double nbulk_rism = sys->nbulk_rism[sys->av[iv].iaa];
-            for (size_t i3=0; i3<N3; i3++) res1[i3] = (1+huv1[i3]) * (dd1? dd1[i3] : nbulk) / nbulk_rism;
+            for (size_t i3=0; i3<N3; i3++) res1[i3] = (1+huv1[i3]) * (dd1? dd1[i3] : nbulk);
         }
     }
 
