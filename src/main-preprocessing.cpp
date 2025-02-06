@@ -955,9 +955,6 @@ bool read_solvent_zeta(IET_Param * sys, IET_arrays * arr, char * fnzeta, int nvm
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 bool calculate_lse_ab_automatically(IET_Param * sys, IET_arrays * arr){
-  #ifdef _EXPERIMENTAL_
-    return calculate_lse_ab_eperimental_automatically(sys, arr);
-  #else
   // Post Handling
   // calculate lse_b
     if (sys->calc_ab_automatically && arr->n_zeta>0){
@@ -980,7 +977,6 @@ bool calculate_lse_ab_automatically(IET_Param * sys, IET_arrays * arr){
 //printf("wvv: %d %d nhkvv: %d %d\n", rdvv, arr->n_wvv, rdvv, arr->n_nhkvv); for (int i=0; i<10&&i<arr->n_wvv; i++){ printf(" wvv"); for (int j=0; j<sys->nv; j++) for (int k=0; k<sys->nv; k++) printf(" %7.2f", arr->wvv[j][k][i]); printf(" nhkvv"); for (int j=0; j<sys->nv; j++) for (int k=0; k<sys->nv; k++) printf(" %7.2f", arr->nhkvv[j][k][i]); printf("\n"); }
 //printf("wvv: %d %d nhkvv: %d %d\n", rdvv, arr->n_wvv, rdvv, arr->n_nhkvv);
 //for (int i=arr->n_wvv-10; i>=0&&i<arr->n_wvv; i++){ printf(" wvv"); for (int j=0; j<sys->nv; j++) for (int k=0; k<sys->nv; k++) printf(" %7.2f", arr->wvv[j][k][i]); printf(" nhkvv"); for (int j=0; j<sys->nv; j++) for (int k=0; k<sys->nv; k++) printf(" %7.2f", arr->nhkvv[j][k][i]); printf("\n"); }
-  #endif
 }
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 int map_rdf_grps_to_pairs(IET_Param * sys, RDF_data * buffer=nullptr, bool echo_warning=false){

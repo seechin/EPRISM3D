@@ -133,11 +133,7 @@ class IET_arrays {
         dy = box.y / ny; dky = 2*PI / (ny * dx);
         dz = box.z / nz; dkz = 2*PI / (nz * dx);
 
-        #ifdef _EXPERIMENTAL_
-            solver_hi.set_param(sys->lse_a, sys->lse_b, &sys->ex, 0, 2, true);
-        #else
-            solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
-        #endif
+        solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
 
         fftw_mp.set_scale(_box);
         uuv_is_ready = false;

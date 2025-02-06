@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "1.2.5.331";
+const char * software_version = "1.2.6.341";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -312,9 +312,6 @@ char szfn_in[MAX_PATH];
 char szfn_out[MAX_PATH]; FILE * file_out = nullptr;
 char szfn_rdf[MAX_PATH];
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#ifdef _EXPERIMENTAL_
-    #include "experimental.h"
-#endif
 #include    "main-atom-lists.h"
 #include    "read_top.h"
 #include    "main-hi-solver.cpp"
@@ -331,9 +328,6 @@ char szfn_rdf[MAX_PATH];
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #include    "main-compress.cpp"
-#ifdef _EXPERIMENTAL_
-    #include "experimental.cpp"
-#endif
 #include    "main-analysis-param.cpp"
 #include    "main-preprocessing.cpp"
 #include    "main-build-ff.cpp"
@@ -362,9 +356,6 @@ void init_software_constants(){
             CLOSURE_name[i] = CLOSURE_alias[j].name; break;
         }
     }
-    #ifdef _EXPERIMENTAL_
-        init_experimental_contants();
-    #endif
 }
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //---------------------------------------------------------------------------------

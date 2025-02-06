@@ -51,20 +51,13 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
             if (cmd[ic].step>=2){
                 sys->lse_a = cmd[ic].command_params_double[0];
                 sys->lse_b = cmd[ic].command_params_double[1];
-              #ifdef _EXPERIMENTAL_
-                perform_experimental_cmd_hi_solver(sys, arr, cmd[ic].command_params_double, cmd[ic].step);
-              #else
                 arr->solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
                 fprintf(sys->log(), "solver_hi.set_param(A=%g, B=%g)\n", sys->lse_a, sys->lse_b);
-              #endif
             } else {
               fprintf(sys->log(), "%s : LSE: A=%g B=%g\n", software_name, sys->lse_a, sys->lse_b);
             }
         } else if (cmd[ic].command==IETCMD_LSE){
             if (cmd[ic].step>=1){
-              #ifdef _EXPERIMENTAL_
-                experimental_read_IETCMD_LSE(sys, cmd, ic);
-              #else
                 double lse_a = sys->lse_a; bool lse_a_set = false;
                 double lse_b = sys->lse_b; bool lse_b_set = false;
                 for (int i=0; i<MAX_CMD_PARAMS; i++) if (cmd[ic].command_params_int[i]!=0){
@@ -81,22 +74,14 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
                 } else if (!lse_a_set&&lse_b_set){
                     sys->calc_ab_automatically = 1;
                 }
-              #endif
                 calculate_lse_ab_automatically(sys, arr);
-                #ifdef _EXPERIMENTAL_
-                    arr->solver_hi.set_param(sys->lse_a, sys->lse_b, &sys->ex, 0, 2, true);
-                #else
-                    arr->solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
-                #endif
+                arr->solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
                 if (sys->debug_level>=1) fprintf(sys->log(), "debug:: solver_hi.set_param(A=%g, B=%g)\n", sys->lse_a, sys->lse_b);
             } else {
                 if (sys->debug_level>=1) fprintf(sys->log(), "debug:: LSE: A=%g B=%g\n", sys->lse_a, sys->lse_b);
             }
 
         /*
-          #ifdef _EXPERIMENTAL_
-            experimental_read_IETCMD_LSE(sys, cmd, ic);
-          #else
             double lse_a = sys->lse_a; bool lse_a_set = false;
             double lse_b = sys->lse_b; bool lse_b_set = false;
             for (int i=0; i<MAX_CMD_PARAMS; i++) if (cmd[ic].command_params_int[i]!=0){
@@ -111,14 +96,9 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
             } else if (!lse_a_set&&lse_b_set){
                 sys->calc_ab_automatically = 1;
             }
-          #endif
             calculate_lse_ab_automatically(sys, arr);
             if (sys->debug_level>=2) fprintf(sys->log(), "DEBUG:: LSE: A=%g B=%g\n", sys->lse_a, sys->lse_b);
-            #ifdef _EXPERIMENTAL_
-                arr->solver_hi.set_param(sys->lse_a, sys->lse_b, &sys->ex, 0, 2, true);
-            #else
-                arr->solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
-            #endif
+            arr->solver_hi.set_param(sys->lse_a, sys->lse_b, 0, 2, true);
             */
         } else if (cmd[ic].command==IETCMD_SET       ){
             for (int i=0; i<cmd[ic].step&&i<MAX_CMD_PARAMS; i++){
@@ -493,9 +473,10 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
             sys->stepmax_hi = cmd[ic].step;
             if (!arr->dd) arr->dd = arr->__dd;
 
-            if (!arr->zeta && hial>=HIAL_HI){
-                fprintf(sys->log(), "%s%s : error : cannot perform %s: -zeta or [zeta] not defined%s\n", sys->is_log_tty?color_string_of_error:"", software_name, HIAL_name[hial], sys->is_log_tty?color_string_end:"");
-                success = false;
+            if (!arr->zeta || hial==HIAL_NOHI){
+                if (hial!=HIAL_NOHI) fprintf(sys->log(), "%s%s : warning : skip %s due to missing -zeta or [zeta]%s\n", sys->is_log_tty?color_string_of_error:"", software_name, HIAL_name[hial], sys->is_log_tty?color_string_end:"");
+                size_t N3 = arr->nx*arr->ny*arr->nz; size_t N4 = N3*arr->nv; size_t N4m = N3*arr->nvm;
+                for (int ivm=0; ivm<sys->nvm; ivm++) for (size_t i3=0; i3<N3; i3++) arr->dd[ivm][0][0][i3] = sys->nbulk[ivm];
             } else if (hial==HIAL_LDI){
                 if (sys->debug_level>=2) fprintf(sys->log(), "DEBUG:: perform_ldi()\n");
                 bool hi_converged = perform_ldi(sys, arr, cmd[ic].command_params_int, cmd[ic].command_params_double, MAX_CMD_PARAMS);
@@ -562,9 +543,6 @@ int process_command_sequence(int time_of_run, IET_Param * sys, IET_arrays * arr,
 
       // block commands
 
-      #ifdef _EXPERIMENTAL_
-        } else if (experimental_process_command(sys, arr, cmd, ic)){
-      #endif
         }
       // no more command and will end here
     }

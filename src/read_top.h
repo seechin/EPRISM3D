@@ -16,17 +16,20 @@ class FFAtomType { public:
 const int MAX_BONDS_PER_SOLVENT_ATOM = 12;
 class FFAtomList : public FFAtomType { public:
     int index; int iaa; int nb; int ib[MAX_BONDS_PER_SOLVENT_ATOM];
-    FFAtomList * next;
+    //FFAtomList * next;
+    int inext;
     void init(int _index, char * _name, char * _mole, double _mass, double _charge, double _sigma, double _epsilon){
         index = _index; nb = 0; iaa = 1;
-        FFAtomType::init(_name, _mole, _mass, _charge, _sigma, _epsilon); next = nullptr;
+        FFAtomType::init(_name, _mole, _mass, _charge, _sigma, _epsilon);
+        //next = nullptr;
+        inext = -1;
     }
 };
 class FFMoleType { public:
-    char name[MAX_NAME]; FFAtomList * ar;
+    char name[MAX_NAME]; int iar; // FFAtomList * ar;
     void init(char * _name){
         memset(name, 0, sizeof(name)); int len = (int)strlen(_name); if (len>MAX_NAME-1) len = MAX_NAME-1;
-        memcpy(name, _name, len); ar = nullptr;
+        memcpy(name, _name, len); iar = -1; // ar = nullptr;
     }
 };
 
@@ -232,8 +235,13 @@ class AnalysisTopParameters {
                             if (nw>=7) this_a.mass = atof(sl[7].text);
                             //printf("Atom[%d] = %d%s.%s %g %g %g (%s)\n", this_a.index, this_a.iaa, this_a.mole, this_a.name, this_a.charge, this_a.sigma, this_a.epsilon, lat.data[idef].name);
                             las.insert(&this_a);
-                            if (!lmt.data[imolnow].ar) lmt.data[imolnow].ar = &las.data[las.count-1]; else {
-                                FFAtomList * q = lmt.data[imolnow].ar; while (q->next) q = q->next; q->next = &las.data[las.count-1];
+                            //if (!lmt.data[imolnow].ar) lmt.data[imolnow].ar = &las.data[las.count-1]; else {
+                            if (lmt.data[imolnow].iar<0) lmt.data[imolnow].iar = las.count-1; else {
+                                //FFAtomList * q = lmt.data[imolnow].ar;
+                                int iq = lmt.data[imolnow].iar;
+                                // while (q->next) q = q->next; q->next = &las.data[las.count-1];
+                                while (las.data[iq].inext>=0 && las.data[iq].inext!=iq) iq = las.data[iq].inext;
+                                las.data[iq].inext = las.count - 1;
                             }
                         }
                     }
@@ -248,8 +256,9 @@ class AnalysisTopParameters {
                     } else {
                         int bondi = atoi(sl[0].text); int bondj = atoi(sl[1].text);
                         FFAtomList * ai = nullptr; FFAtomList * aj = nullptr;
-                        //for (FFAtomList * ax = mt[imolnow].ar; ax && (!ai || !aj); ax=ax->next){
-                        for (FFAtomList * ax = lmt.data[imolnow].ar; ax && (!ai || !aj); ax=ax->next){
+                        // for (FFAtomList * ax = lmt.data[imolnow].ar; ax && (!ai || !aj); ax=ax->next){
+                        for (int iq = lmt.data[imolnow].iar; iq>=0 && (!ai || !aj); iq = las.data[iq].inext){
+                            FFAtomList * ax = &las.data[iq];
                             if (ax->index==bondi) ai = ax; if (ax->index==bondj) aj = ax;
                         }
                         if (ai && aj){
@@ -259,6 +268,7 @@ class AnalysisTopParameters {
                         //printf("define bond for %d : %d (%s:%s) - %d (%s:%s)\n", imolnow, bondi, ai?ai->mole:"nullptr", ai?ai->name:"nullptr", bondj, aj?aj->mole:"nullptr", aj?aj->name:"nullptr");
                     }
                 } else if (on_compile==4){ // molecules
+printf("molecules\n");
                     if (is_group_excluded(sl[0])){
                         fprintf(flog, "# exclude: %s %d\n", sl[0].text, atoi(sl[1].text));
                         continue;
@@ -278,7 +288,9 @@ class AnalysisTopParameters {
 
                     for (int ec=0; ec<nm; ec++){
                         last_top_iaa = -1;
-                        for (FFAtomList * p = lmt.data[imol].ar; p; p=p->next){
+                        //for (FFAtomList * p = lmt.data[imol].ar; p; p=p->next){
+                        for (int iq = lmt.data[imol].iar; iq>=0; iq = las.data[iq].inext){
+                            FFAtomList * p = &las.data[iq];
                             ++iindex; n_atom_in_mol ++; if (iaa_base<0) iaa_base = 0;
                             if (reindex_residues){
                                 if (p->iaa != last_top_iaa){

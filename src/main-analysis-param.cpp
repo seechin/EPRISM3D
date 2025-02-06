@@ -551,11 +551,7 @@ bool set_sys_options(IET_Param * sys, const char * sline, bool flag, const char 
             sys->b_allow_r2uvmin = flag;
         } else if (sl[i]=="Ef" || sl[i]=="alloc-Ef" || sl[i]=="alloc_Ef"){
             sys->b_allow_Ecoul0 = flag;
-      #ifdef _EXPERIMENTAL_
-        } else if (!set_sys_options_experimental(sys, sl, i, flag)){
-      #else
         } else {
-      #endif
             char buffer[1024]; strncpy(buffer, sl[i].text, sizeof(buffer));
             fprintf(sys->log(), "%s : %s[%d] : unknown flag \"%s\"\n", software_name, get_second_fn(script_name), script_line, buffer); ret = false;
         }
@@ -1390,13 +1386,7 @@ int analysis_parameter_line(IET_Param * sys, char * argv[], int * argi, int argc
    // Done for all known parameters ---------------------------------------------------
    // ---------------------------------------------------------------------------------
     } else if (key.text[0] == '-'){
-        #ifdef _EXPERIMENTAL_
-            if (analysis_experinemtal_parameter_line(sys, argv, &i, argc, script_name, script_line, script_path)>0){
-                fprintf(sys->log(), "%s%s : %s[%d] : unknown option \"%s\"%s\n", istty?color_string_of_synerr:"", software_name, get_second_fn(script_name), script_line, argv[i], istty?color_string_end:""); ret = 1;
-            }
-        #else
-            fprintf(sys->log(), "%s%s : %s[%d] : unknown option \"%s\"%s\n", istty?color_string_of_synerr:"", software_name, get_second_fn(script_name), script_line, argv[i], istty?color_string_end:""); ret = 1;
-        #endif
+        fprintf(sys->log(), "%s%s : %s[%d] : unknown option \"%s\"%s\n", istty?color_string_of_synerr:"", software_name, get_second_fn(script_name), script_line, argv[i], istty?color_string_end:""); ret = 1;
     } else {
         fprintf(sys->log(), "%s%s : %s[%d] : unknown string \"%s\"%s\n", istty?color_string_of_synerr:"", software_name, get_second_fn(script_name), script_line, argv[i], istty?color_string_end:""); ret = 1;
     }
@@ -1559,16 +1549,10 @@ int analysis_params(IET_Param * sys, int argc, char * argv[]){
             }
             if (error & 16){
                 printf("%s%s%s", szHelpAdvanced, szHelpInteractive, szHelpInternal);
-              #ifdef _EXPERIMENTAL_
-                printf("%s", szHelpExperimental);
-              #endif
                 printf("%s", szHelpNote);
             }
             if ((error & 512) && help_search_str){
                 const char * helps[] = { szHelp1, szHelpXTC, szHelpMP, szHelp2, szHelpLibZ, szHelp3, szHelpCommands, szHelpAdvanced, szHelpInteractive, szHelpInternal,
-                  #ifdef _EXPERIMENTAL_
-                    szHelpExperimental,
-                  #endif
                     szHelpSecRISM3D_RISM, szHelpSecRISM3D_HI, szHelpSecRISM3DS, szHelpSecATOM, szHelpNote };
                 int line_num = 1; bool is_stdout_tty = isatty(fileno(stdout));
                 bool found = false; StringNS::string hkey = help_search_str;
@@ -1996,10 +1980,6 @@ bool analysis_command(IET_Param * sys, char * line, const char * line_orig, cons
         } else if (sl[0]=="test-and-save"){ cmd_type = IETCMD_TEST_SAVE; cmd.command = IETCMD_TEST_SAVE;
         } else if (sl[0]=="rdf-content"){ cmd_type = IETCMD_RDF_CONTENT; cmd.command = IETCMD_RDF_CONTENT;
         } else if (sl[0]=="temperature"){ cmd_type = IETCMD_TEMPERATURE; cmd.command = IETCMD_TEMPERATURE;
-      // cmd: experimental
-      #ifdef _EXPERIMENTAL_
-        } else if (experimental_analysis_command(sl[0], i_param_list, cmd, cmd_type, sys->log(), sys->is_log_tty, script_name, script_line)){
-      #endif
       // cmd: done
         } else {
             char buffer[512]; memset(buffer, 0, sizeof(buffer)); memcpy(buffer, sl[0].text, sl[0].length>sizeof(buffer)-1?sizeof(buffer)-1:sl[0].length);
@@ -2542,10 +2522,6 @@ bool analysis_command(IET_Param * sys, char * line, const char * line_orig, cons
                     if (i_param_list<MAX_CMD_PARAMS) cmd.command_params_double[i_param_list++] = factor;
                     cmd.step = i_param_list;
                 }
-          // experimental
-          #ifdef _EXPERIMENTAL_
-            } else if (experimental_analysis_command_params(sl, nw, i, i_param_list, cmd, cmd_type, sys->log(), sys->is_log_tty, script_name, script_line)){
-          #endif
           // done
             } else {
                 char buffer[512]; memset(buffer, 0, sizeof(buffer)); memcpy(buffer, sl[i].text, sl[i].length>sizeof(buffer)-1?sizeof(buffer)-1:sl[i].length);

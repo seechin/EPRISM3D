@@ -1,5 +1,5 @@
 const char * software_name = "gmxtop2solute";
-const char * software_version = "1.2.4.331";
+const char * software_version = "1.2.6.341";
 const char * copyright_string = "(c) 2023 Cao Siqin";
 
 #include    <errno.h>

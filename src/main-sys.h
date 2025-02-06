@@ -87,9 +87,6 @@ class IET_Param {
     double llambda[MAX_SOL]; int nllambda; // ln\lambda is the integral constants
     double lse_a, lse_b; int calc_ab_automatically, calc_nbulk_automatically;
     double nbulk[MAX_SOL]; int nnbulk; // atomised mole fraction
-    #ifdef _EXPERIMENTAL_
-      IET_Param_Exp ex; // experimental features
-    #endif
   public:   // SCF iteration tolerances
     __REAL__ errtolhi, errtolrism; __REAL__ delhi, delrism; int ndiis_rism, ndiis_hi;
     bool err_from_unscaled_res;
@@ -200,9 +197,6 @@ class IET_Param {
         for (int i=0; i<MAX_SOL; i++) degree_of_freedom[i] = 3; n_degree_of_freedom = 0;
         for (int i=0; i<MAX_SOL; i++) llambda[i] = 0; nllambda = 0; nbulk[0] = 1; nnbulk = 0;
         lse_a = 0.3; lse_b = 54; calc_ab_automatically = 2; calc_nbulk_automatically = false;
-        #ifdef _EXPERIMENTAL_
-            ex.init();
-        #endif
 
         gcutoff_ef_occupation = MACHINE_REASONABLE_ERROR;
         out_rdf_bins = 50; n_rdf_grps = 0; memset(rdf_grps, 0, sizeof(rdf_grps)); rdf_content = 0;

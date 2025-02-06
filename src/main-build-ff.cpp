@@ -65,9 +65,6 @@ void build_force_field_sr_1(int i_begin, int i_end, int * i_now, IET_Param * sys
                 sigma = sys->as[ja].sigma;
                 epsilon = -1;
             } else {
-              #ifdef _EXPERIMENTAL_
-                if (sys->b_solvent_dipole_correction) perform_solvent_dipole_correction(sys, ja, iv, sigma, epsilon);
-              #endif
             }
             sigmas[iv] = sigma; epsilons[iv] = epsilon;
         }

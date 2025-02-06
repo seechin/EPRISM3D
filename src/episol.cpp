@@ -1,5 +1,5 @@
 const char * software_name = "episol";
-const char * software_version = "1.2.4.331";
+const char * software_version = "1.2.6.341";
 const char * copyright_string = "(c) 2023 Cao Siqin";
 
 #include    "header.h"
@@ -86,6 +86,8 @@ int main(int argc, char * argv[]){
     if (argc<=1 || key=="-h" || key=="-help" || key=="--help"){
         printf("%s %s %s\n", software_name, software_version, copyright_string);
         printf("%s\n", szHelp);
+    } else if (key=="-version" || key=="--version"){
+        printf("%s\n", software_version);
     } else if (key=="gmxtop2solute" || key=="top2solute" || key=="top"){
         return GMXTOP2SOLUTE::main(argc-1, &argv[1]);
     } else if (key=="gensolvent" || key=="gv"){

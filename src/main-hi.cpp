@@ -58,9 +58,6 @@ void prepare_hi_theta(IET_Param * sys, IET_arrays * arr){
         if (U >= sys->ccutoff) arr->theta[iv][iz][iy][ix] = 0; else arr->theta[iv][iz][iy][ix] = 1;
     }
 
-  #ifdef _EXPERIMENTAL_
-    post_prepare_theta(sys, arr);
-  #endif
 }
 
 bool prepare_phi(IET_Param * sys, IET_arrays * arr){
@@ -187,9 +184,11 @@ bool perform_hi(IET_Param * sys, IET_arrays * arr, int * hi_param_indicator, dou
         }
     }
 
-  /*#ifdef _EXPERIMENTAL_
-    experimental_post_perform_hi(sys, arr, hi_param_indicator, hi_param, n_hi_param);
-  #endif*/
+    if (sys->_n_hold_list>0){
+        for (int i=0; i<sys->_n_hold_list; i++){ int ivh = sys->_hold_list[i]-1;
+            if (ivh>=0 && ivh<sys->nvm) for (size_t i3=0; i3<N3; i3++) arr->dd[ivh][0][0][i3] = sys->nbulk[ivh];
+        }
+    }
 
   // step 6. If not converged, return false
     return success;

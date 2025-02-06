@@ -1,3 +1,9 @@
+# 1.2.6
+
+Feb 5, 2025
+
+Fixed a bug in TOP file processing
+
 # 1.2.4 - 1.2.5
 
 May 26 - June 5, 2023
