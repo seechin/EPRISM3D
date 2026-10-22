@@ -46,7 +46,8 @@ int compressor_version_compare(unsigned short hd[4]/*data*/, unsigned short hc[4
     //printf("%c%c %d.%d.%d vs %c%c %d.%d.%d\n", hc[0]%256, hc[0]/256, hc[1], hc[2], hc[3], hd[0]%256, hd[0]/256, hd[1], hd[2], hd[3]);
     if ((hd[0]&0xFF)=='u' || (hd[0]&0xFF)=='U') return 0; // no compression of data
     else if (hd[0]!=hc[0]) return -1; // compressor unsupport
-    else if (hc[1]>=hd[1] && hc[2]>=hd[2] && hc[3]>=hd[3]) return 0; // can decode
+    else if (hc[1]*1000000 + hc[2]*1000 + hc[3] >= hd[1]*1000000 + hd[2]*1000 + hd[3]) return 0; // can decode
+    //else if (hc[1]>=hd[1] && hc[2]>=hd[2] && hc[3]>=hd[3]) return 0; // can decode
     else return 1; // canont decode
 }
 

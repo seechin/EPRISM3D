@@ -183,7 +183,7 @@ class IET_Param {
         allow_interactive = false;
        #endif
 
-        stepmax_rism = 100;
+        stepmax_rism = 10000;
         errtolrism = check_error_tol(0); delrism = 0.7; ndiis_rism = 0;
         ietal = IETAL_NONE;
 

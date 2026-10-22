@@ -1,5 +1,5 @@
 const char * software_name = "eprism3d";
-const char * software_version = "1.2.6.341";
+const char * software_version = "1.2.6.332";
 const char * copyright_string = "(c) 2022 Cao Siqin";
 
 #include    "header.h"
@@ -881,6 +881,8 @@ int main(int argc, char * argv[]){
         if ((sys->force_box || sys->traj.box.x<=0) && sys->box.x>0) sys->traj.box.x = sys->box.x;
         if ((sys->force_box || sys->traj.box.y<=0) && sys->box.y>0) sys->traj.box.y = sys->box.y;
         if ((sys->force_box || sys->traj.box.z<=0) && sys->box.z>0) sys->traj.box.z = sys->box.z;
+
+        process_atoms_outside_box(sys);
 
         //if (sys->debug_level>=5){ for (int i=0; i<sys->nas; i++) fprintf(sys->log(), "DEBUG:::: %5s %5s : %12g %12g %12g\n", sys->as[i].mole, sys->as[i].name, sys->traj.atom[i].r.x, sys->traj.atom[i].r.y, sys->traj.atom[i].r.z);}
       // display frame information

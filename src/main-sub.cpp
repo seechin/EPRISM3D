@@ -1169,3 +1169,20 @@ void search_solutes_and_run(IET_Param * sys, IET_arrays * arr, int argc, char * 
 
     exit(0);
 }
+
+void process_atoms_outside_box(IET_Param * sys){
+    for (int i=0; i<sys->nas; i++){
+        if (sys->traj.box.x>0){
+            while (sys->traj.atom[i].r.x<0) sys->traj.atom[i].r.x += sys->traj.box.x; while (sys->traj.atom[i].r.x>sys->traj.box.x) sys->traj.atom[i].r.x -= sys->traj.box.x;
+        }
+        if (sys->traj.box.y>0){
+            while (sys->traj.atom[i].r.y<0) sys->traj.atom[i].r.y += sys->traj.box.y; while (sys->traj.atom[i].r.y>sys->traj.box.y) sys->traj.atom[i].r.y -= sys->traj.box.y;
+        }
+        if (sys->traj.box.z>0){
+            while (sys->traj.atom[i].r.z<0) sys->traj.atom[i].r.z += sys->traj.box.z; while (sys->traj.atom[i].r.z>sys->traj.box.z) sys->traj.atom[i].r.z -= sys->traj.box.z;
+        }
+    }
+
+}
+
+
