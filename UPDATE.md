@@ -1,3 +1,9 @@
+# 1.2.7a0
+
+Oct 22, 2026
+
+Fixed bugs of PBC and ZLIB 
+
 # 1.2.6
 
 Feb 5, 2025
@@ -62,3 +68,4 @@ Fix: rewrote MS and BPGG closures
 June 3, 2022
 
 The license changed to LGPL3 from GPL3.
+
